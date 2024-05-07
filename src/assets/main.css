@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans+KR:wght@100..900&display=swap');
+
+html, body{
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: "Montserrat", "Noto Sans KR", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    color: #333;
+}
+
+.visible-scrollbar,
+.invisible-scrollbar,
+.mostly-customized-scrollbar {
+    display: block;
+    overflow: auto;
+}
+
+.invisible-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* "대부분 커스터마이징된" 스크롤바
+ * (width/height가 지정되지 않으면 보이지 않음 */
+.mostly-customized-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 8px;
+    background-color: #fff; /* 또는 트랙에 추가한다 */
+}
+
+/* 썸(thumb) 추가 */
+.mostly-customized-scrollbar::-webkit-scrollbar-thumb {
+    background: #b3b3b3;
+}
+
+/* 애니메이션 추가 */
+.fade-in-out {
+    transition: opacity 0.5s, visibility 0.5s;
+}
+
+.close {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.navbar {
+    background-color: #fff;
+    color: #202020;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    height: 4rem;
+    width: 100%;
+}
+
+.navbar a {
+    color: #202020;
+    text-decoration: none;
+    padding: 10px 15px;
+}
+
+.container {
+    max-width: 100%;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding-top: 2rem;
+}
+
+.left-handle {
+    z-index: 10;
+    position: absolute;
+    min-width: 450px;
+    max-height: 85%;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.left-handle-menu {
+    font-size: 20px;
+    text-align: center;
+}
+
+.left-handle-menu ul li {
+    display: inline-block;
+}
+
+.input-cont {
+    border: 2px solid #2564eb;
+    margin-top: 30px;
+    padding: 5px;
+}
+
+.list-selected {
+    color: #2564eb;
+    border-bottom: 5px solid #2564eb;
+}
+
+.left-handle-selector {
+    margin-top: 20px;
+    text-align: center;
+    background-color: #f4f4f4;
+    padding: 5px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.custom-selector {
+    background-color: #f4f4f4;
+}
+
+#listContSection {
+    height: 400px;
+}
