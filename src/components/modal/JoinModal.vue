@@ -7,7 +7,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update'])
 
-const loginForm = ref({
+const joinForm = ref({
   userId: '',
   email: '',
   password: ''
@@ -21,51 +21,74 @@ const matchPassword = ref(false)
 const confirmPassword = ref('')
 
 watch(
-  [() => loginForm.value.password, () => confirmPassword.value],
+  [() => joinForm.value.password, () => confirmPassword.value],
   () => {
-    matchPassword.value = loginForm.value.password === confirmPassword.value
+    matchPassword.value = joinForm.value.password === confirmPassword.value
   },
   { immediate: true }
 ) // 컴포넌트가 마운트될 때 즉시 실행되도록 immediate 옵션 추가
+
+const handleJoin = () => {
+  console.log('Join attempt with:', joinForm.value.username, joinForm.value.password)
+
+  fetch('http://localhost:8080/member/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+
+    body: JSON.stringify(joinForm.value)
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log('login success: ', data)
+      localStorage.setItem('loginMember', JSON.stringify(data))
+      closeModal() // 로그인 성공 후 모달 닫기
+      location.reload()
+    })
+    .catch((err) => {
+      console.error('Login failed: ', err)
+    })
+}
 </script>
 
 <template>
   <div v-if="show" class="modal-overlay" @click.self="closeModal">
     <div class="modal-content" @click.stop>
-      <form @submit.prevent="handleLogin">
+      <form @submit.prevent="handleJoin">
         <div class="form-group">
           <label for="userId">ID</label>
-          <input type="text" id="userId" v-model="loginForm.userId" required />
-          <span v-if="loginForm.userId.length >= 4" style="color: green">적절한 ID입니다.</span>
-          <span v-if="loginForm.userId.length < 4" style="color: red"
+          <input type="text" id="userId" v-model="joinForm.userId" required />
+          <span v-if="joinForm.userId.length >= 4" style="color: green">적절한 ID입니다.</span>
+          <span v-if="joinForm.userId.length < 4" style="color: red"
             >ID는 최소 4자리 이상입니다.</span
           >
         </div>
         <div class="form-group">
           <label for="userId">이메일</label>
-          <input type="email" v-model="loginForm.email" required />
+          <input type="email" v-model="joinForm.email" required />
           <span
             v-if="
-              loginForm.email.includes('@') &&
-              loginForm.email.length >= 4 &&
-              loginForm.email.includes('.')
+              joinForm.email.includes('@') &&
+              joinForm.email.length >= 4 &&
+              joinForm.email.includes('.')
             "
             style="color: green"
             >적절한 이메일입니다.</span
           >
-          <span v-else-if="!loginForm.email.includes('@')" style="color: red"
+          <span v-else-if="!joinForm.email.includes('@')" style="color: red"
             >이메일에는 '@'가 포함되어야 합니다.</span
           >
-          <span v-else-if="!loginForm.email.includes('.')" style="color: red"
+          <span v-else-if="!joinForm.email.includes('.')" style="color: red"
             >이메일에는 도메인이 포함되어야 합니다.</span
           >
-          <span v-if="loginForm.email.length < 4" style="color: red"
+          <span v-if="joinForm.email.length < 4" style="color: red"
             >이메일은 최소 4자리 이상입니다.</span
           >
         </div>
         <div class="form-group">
           <label for="password">비밀번호</label>
-          <input type="password" id="password" v-model="loginForm.password" required />
+          <input type="password" id="password" v-model="joinForm.password" required />
         </div>
         <div class="form-group">
           <label for="confirm-password">비밀번호 확인</label>
@@ -78,7 +101,7 @@ watch(
             >비밀번호가 일치하지 않습니다.</span
           >
         </div>
-        <button type="submit" style="margin-right: 10px; border-radius: 10%">로그인</button>
+        <button type="submit" style="margin-right: 10px; border-radius: 10%">회원가입</button>
         <button @click="closeModal" style="border-radius: 10%">닫기</button>
       </form>
     </div>
