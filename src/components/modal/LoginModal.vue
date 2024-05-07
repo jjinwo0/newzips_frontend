@@ -8,7 +8,7 @@ const props = defineProps({
 const emit = defineEmits(['update'])
 
 const loginForm = ref({
-  userId: '',
+  username: '',
   password: ''
 })
 
@@ -17,9 +17,26 @@ const closeModal = () => {
 }
 
 const handleLogin = () => {
-  console.log('Login attempt with:', loginForm.value.userId, loginForm.value.password)
-  // 여기서 로그인 처리 로직을 추가할 수 있습니다. 예: API 호출
-  closeModal() // 로그인 성공 후 모달 닫기
+  console.log('Login attempt with:', loginForm.value.username, loginForm.value.password)
+
+  fetch('http://localhost:8080/member/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+
+    body: JSON.stringify(loginForm.value)
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log('login success: ', data)
+      localStorage.setItem('loginMember', JSON.stringify(data))
+      closeModal() // 로그인 성공 후 모달 닫기
+      location.reload()
+    })
+    .catch((err) => {
+      console.error('Login failed: ', err)
+    })
 }
 </script>
 
@@ -28,14 +45,16 @@ const handleLogin = () => {
     <div class="modal-content" @click.stop>
       <form @submit.prevent="handleLogin">
         <div class="form-group">
-          <label for="userId">ID</label>
-          <input type="text" id="userId" v-model="loginForm.userId" required />
+          <label for="username">ID</label>
+          <input type="text" id="username" v-model="loginForm.username" required />
         </div>
         <div class="form-group">
           <label for="password">비밀번호</label>
           <input type="password" id="password" v-model="loginForm.password" required />
         </div>
-        <button type="submit" style="margin-right: 10px; border-radius: 10%">로그인</button>
+        <button type="submit" style="margin-right: 10px; border-radius: 10%" @click="handleLogin">
+          로그인
+        </button>
         <button @click="closeModal" style="border-radius: 10%">닫기</button>
       </form>
     </div>

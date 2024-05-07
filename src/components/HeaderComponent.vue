@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref, defineEmits, onMounted } from 'vue'
 
 const userInfo = ref(null)
 
@@ -12,6 +12,34 @@ const openLoginModal = () => {
 const openJoinModal = () => {
   emit('open-join-modal')
 }
+
+const logout = () => {
+  const id = userInfo.value.id
+
+  fetch(`http://localhost:8080/member/logout/${id}`, {
+    method: 'POST'
+  })
+    .then((res) => {
+      if (res.ok) {
+        localStorage.removeItem('loginMember')
+        userInfo.value = null
+        location.reload()
+      } else {
+        throw new Error('Logout Failed')
+      }
+    })
+    .catch((err) => {
+      console.err('Logout Error: ', err)
+    })
+}
+
+onMounted(() => {
+  const loginMember = localStorage.getItem('loginMember')
+
+  if (loginMember) userInfo.value = JSON.parse(loginMember)
+
+  console.log(loginMember)
+})
 </script>
 
 <template>
