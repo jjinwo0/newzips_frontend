@@ -7,7 +7,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update'])
 
-const loginForm = ref({
+const joinForm = ref({
   userId: '',
   email: '',
   password: ''
@@ -21,9 +21,9 @@ const matchPassword = ref(false)
 const confirmPassword = ref('')
 
 watch(
-  [() => loginForm.value.password, () => confirmPassword.value],
+  [() => joinForm.value.password, () => confirmPassword.value],
   () => {
-    matchPassword.value = loginForm.value.password === confirmPassword.value
+    matchPassword.value = joinForm.value.password === confirmPassword.value
   },
   { immediate: true }
 ) // 컴포넌트가 마운트될 때 즉시 실행되도록 immediate 옵션 추가
