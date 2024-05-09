@@ -1,10 +1,13 @@
 <template>
-  <div ref="map" style="width: 100vw; height: 100vh"></div>
+  <div ref="map" class="container max-w-full h-screen">
+    <ControlPanel />
+  </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import axios from 'axios' // axios를 사용하여 HTTP 요청을 보냅니다.
+import axios from 'axios'
+import ControlPanel from '@/components/map/ControlPanel.vue' // axios를 사용하여 HTTP 요청을 보냅니다.
 
 const map = ref(null)
 
