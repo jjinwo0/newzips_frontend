@@ -7,7 +7,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update'])
 
-const joinForm = ref({
+const loginForm = ref({
   userId: '',
   email: '',
   password: ''
@@ -21,9 +21,9 @@ const matchPassword = ref(false)
 const confirmPassword = ref('')
 
 watch(
-  [() => joinForm.value.password, () => confirmPassword.value],
+  [() => loginForm.value.password, () => confirmPassword.value],
   () => {
-    matchPassword.value = joinForm.value.password === confirmPassword.value
+    matchPassword.value = loginForm.value.password === confirmPassword.value
   },
   { immediate: true }
 ) // 컴포넌트가 마운트될 때 즉시 실행되도록 immediate 옵션 추가
@@ -53,10 +53,6 @@ const handleJoin = () => {
 </script>
 
 <template>
-
-
-
-
   <div v-if="show" class="modal-overlay" @click.self="closeModal">
     <div class="relative p-4 w-full max-w-md max-h-full">
       <!-- Modal content -->
