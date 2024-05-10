@@ -1,5 +1,5 @@
 <script setup>
-import HeaderComponent from '@/components/HeaderComponent.vue'
+import HeaderComponent from '@/components/common/HeaderComponent.vue'
 import KakaoMap from '@/components/map/KakaoMap.vue'
 import LoginModal from '@/components/modal/LoginModal.vue'
 import JoinModal from '@/components/modal/JoinModal.vue'

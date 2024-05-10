@@ -92,6 +92,7 @@ h1 {
 .left-handle {
     z-index: 10;
     position: absolute;
+    top: 10%;
     min-width: 450px;
     max-height: 85%;
     padding: 20px;
@@ -137,5 +138,5 @@ h1 {
 }
 
 #listContSection {
-    height: 52vh;
+    height: 48vh;
 }
