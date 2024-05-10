@@ -45,15 +45,7 @@ const searchTradeInfoListByDistrict = function() {
 }
 
 const showDetails = (aptCode) => {
-  axios
-    .get(`http://localhost:8080/house/detail/${aptCode}`)
-    .then((res) => {
-      console.log(res)
-      openDetail.value = true;
-    })
-    .catch((err) => {
-      console.error('조회 에러 발생 :: ', err)
-    })
+  store.showDetails(aptCode)
 }
 
 // select 아이디와, 지역코드를 가지고 select option의 값을 변경해준다.
