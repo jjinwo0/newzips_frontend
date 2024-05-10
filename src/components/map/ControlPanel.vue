@@ -6,6 +6,7 @@ import SearchDetail from './SearchDetail.vue';
 const inputName = ref('')
 
 const searchResult = ref([])
+const searchTradingInfoResult = ref([])
 
 const openDetail = ref(false)
 
@@ -14,6 +15,7 @@ const gugun = ref([])
 const dong = ref([])
 const selectedSido = ref('none')
 const selectedGugun = ref('none')
+const selectedDong = ref('none')
 
 onMounted(() => {
 
@@ -21,15 +23,41 @@ onMounted(() => {
   sendRequest(sido, "*00000000");
 })
 
+// 숫자 3자리마다 , 붙임
+const toNumberFormatOfKor = function(number) {
+
+  if (number === undefined) {
+    return '정보 없음'; // 또는 적절한 기본값
+  }
+  number = Number(number);
+  return number.toLocaleString('ko-KR');
+}
+
+
+// 아파트 이름으로 검색
 const searchByName = () => {
   axios
     .get(`http://localhost:8080/house/list/name/${inputName.value}`)
     .then((res) => {
-      console.log(res.data)
+      searchResult.value = ''
+      searchTradingInfoResult.value = ''
       searchResult.value = res.data
     })
     .catch((err) => {
       console.error('이름 검색 예외 발생 :: ', err)
+    })
+}
+
+// 아파트 거래내역 지역으로 검색
+const searchTradeInfoListByDistrict = function() {
+  axios.get(`http://localhost:8080/house/list/code/${selectedDong.value}`)
+    .then((res) => {
+      searchResult.value = ''
+      searchTradingInfoResult.value = ''
+      searchTradingInfoResult.value = res.data
+    })
+    .catch((err) => {
+      console.error('지역 검색 예외 발생 :: ', err)
     })
 }
 
@@ -168,7 +196,7 @@ const gugunHandleChange = function() {
           <select class="custom-selector" id="gugun" name="gugun" v-model="selectedGugun" @change="gugunHandleChange" ref="gugun">
             <option value="none">군구 선택</option>
           </select>
-          <select class="custom-selector" id="dong" name="dong" ref="dong">
+          <select class="custom-selector" id="dong" name="dong" v-model="selectedDong" ref="dong">
             <option value="none">읍면동 선택</option>
           </select>
         </form>
@@ -176,7 +204,7 @@ const gugunHandleChange = function() {
       <!-- 시도/군구/읍면동 선택 끝 -->
 
       <div class="mt-5">
-        <button
+        <button @click="searchTradeInfoListByDistrict"
           class="w-full py-2.5 px-5 me-2 mb-2 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
           id="list-btn"
           type="button"
@@ -185,13 +213,14 @@ const gugunHandleChange = function() {
         </button>
       </div>
 
+      <!-- 아파트 정보 조회 결과 -->
       <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="searchResult.length > 0">
         <section id="listContSection">
           <article v-for="apart in searchResult" :key="apart.aptCode" @click="showDetails(apart.aptCode)" class="block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
             <div>
               <div class="grid font-semibold text-blue-500 flex flex-wrap items-center gap-1">
                 <div class="flex">
-                  <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6 mr-1">건물명</span>
+                  <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6 mr-1">아파트명</span>
                   <p class="h3">{{ apart.apartmentName }}</p>
                 </div>
                 <div class="flex">
@@ -207,7 +236,41 @@ const gugunHandleChange = function() {
           </article>
         </section>
       </div>
+
       <div v-else></div>
+      <!-- 아파트 정보 조회 결과 끝 -->
+
+      <!-- 아파트 거래내역 정보 조회 결과 -->
+      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="searchTradingInfoResult.length > 0">
+        <section id="listContSection">
+          <article v-for="(tradingInfo, index) in searchTradingInfoResult" :key="index" @click="showDetails(tradingInfo.aptCode)">
+            <div class="block block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
+              <div class="flex justify-between">
+                <h2 class="max-w-[14rem] font-semibold text-blue-500 flex flex-wrap items-center gap-1">
+                  {{tradingInfo.apartmentName}}
+                  <span class="text-sm text-black font-normal">
+                    {{tradingInfo.floor}}층 {{tradingInfo.exclusiveArea }}평
+                  </span>
+                </h2>
+                <div class="flex justify-between">
+                  <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6 m-0 h-6">
+                    {{tradingInfo.dealDate}}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <span class="text-xl text-black font-bold">
+                  {{toNumberFormatOfKor(tradingInfo.dealAmount)}} 만원
+                </span>
+              </div>
+
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <!-- 아파트 거래내역 정보 조회 결과 끝 -->
     </div>
 
     <div style="padding: 2.8em 2em 2em 2em;" v-if="openDetail">
