@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import SearchDetail from './SearchDetail.vue';
 
 const inputName = ref('')
@@ -8,6 +8,18 @@ const inputName = ref('')
 const searchResult = ref([])
 
 const openDetail = ref(false)
+
+const sido = ref([])
+const gugun = ref([])
+const dong = ref([])
+const selectedSido = ref('none')
+const selectedGugun = ref('none')
+
+onMounted(() => {
+
+  // 브라우저가 열리면 시도정보 얻기
+  sendRequest(sido, "*00000000");
+})
 
 const searchByName = () => {
   axios
@@ -31,7 +43,105 @@ const showDetails = (aptCode) => {
     .catch((err) => {
       console.error('조회 에러 발생 :: ', err)
     })
-} 
+}
+
+// select 아이디와, 지역코드를 가지고 select option의 값을 변경해준다.
+const sendRequest = function(selid, regcode) {
+  const url = "https://grpc-proxy-server-mkvo6j4wsq-du.a.run.app/v1/regcodes";
+  let params = "regcode_pattern=" + regcode + "&is_ignore_zero=true";
+  fetch(`${url}?${params}`)
+    .then((response) => response.json())
+    .then((data) => {
+      return addOption(selid, data)
+    });
+}
+
+// 선택한 select에 option 을 추가하는 메서드
+const addOption = function(selid, data) {
+  let opt = ``;
+  initOption(selid);
+  switch (selid.value.id) {
+    case "sido":
+      opt += `<option value="">시도선택</option>`;
+      data.regcodes.forEach(function (regcode) {
+        opt += `
+                <option value="${regcode.code}">${regcode.name}</option>
+                `;
+      });
+      break;
+    case "gugun":
+      opt += `<option value="">구군선택</option>`;
+      for (let i = 0; i < data.regcodes.length; i++) {
+        if (i != data.regcodes.length - 1) {
+          if (
+            data.regcodes[i].name.split(" ")[1] == data.regcodes[i + 1].name.split(" ")[1] &&
+            data.regcodes[i].name.split(" ").length !=
+            data.regcodes[i + 1].name.split(" ").length
+          ) {
+            data.regcodes.splice(i, 1);
+            i--;
+          }
+        }
+      }
+      let name = "";
+      data.regcodes.forEach(function (regcode) {
+        if (regcode.name.split(" ").length == 2) name = regcode.name.split(" ")[1];
+        else name = regcode.name.split(" ")[1] + " " + regcode.name.split(" ")[2];
+        opt += `
+                <option value="${regcode.code}">${name}</option>
+                `;
+      });
+      break;
+    case "dong":
+      opt += `<option value="">동선택</option>`;
+      let idx = 2;
+      data.regcodes.forEach(function (regcode) {
+        if (regcode.name.split(" ").length != 3) idx = 3;
+        opt += `
+                <option value="${regcode.code}">${regcode.name.split(" ")[idx]}</option>
+                `;
+      });
+  }
+  selid.value.innerHTML = opt;
+}
+
+// option 초기화
+const initOption = function(selid) {
+  let options =  selid.value;
+  options.length = 0;
+  let opt = ``;
+
+  if(selid.value.id == 'gugun') {
+    opt += `<option value="">구군선택</option>`;
+  }
+  if(selid.value.id == 'dong') {
+    opt += `<option value="">동선택</option>`;
+  }
+  selid.value.innerHTML = opt;
+}
+
+// 시도가 바뀌면 구군정보 얻기.
+const sidoHandleChange = function() {
+  if (selectedSido.value) {
+    if(selectedSido.value == '') return;
+    let regcode = selectedSido.value.substr(0, 2) + "*00000";
+    sendRequest(gugun, regcode);
+  } else {
+    initOption(gugun);
+    initOption(dong);
+  }
+}
+
+// 구군이 바뀌면 동 정보 얻기
+const gugunHandleChange = function() {
+  if (selectedGugun.value) {
+    let regcode = selectedGugun.value.substr(0, 5) + "*";
+    sendRequest(dong, regcode);
+  } else {
+    initOption(dong);
+  }
+}
+
 </script>
 
 <template>
@@ -51,14 +161,14 @@ const showDetails = (aptCode) => {
       </div>
 
       <div class="left-handle-selector">
-        <form id="houseSearchForm">
-          <select class="custom-selector" id="sido" name="sido">
+        <form id="houseSearchForm" style="display: flex; width: 100%; justify-content: space-around;">
+          <select class="custom-selector" id="sido" name="sido" v-model="selectedSido" @change="sidoHandleChange" ref="sido">
             <option value="none">시도 선택</option>
           </select>
-          <select class="custom-selector" id="gugun" name="gugun">
-            <option value="none">시군구 선택</option>
+          <select class="custom-selector" id="gugun" name="gugun" v-model="selectedGugun" @change="gugunHandleChange" ref="gugun">
+            <option value="none">군구 선택</option>
           </select>
-          <select class="custom-selector" id="dong" name="dong">
+          <select class="custom-selector" id="dong" name="dong" ref="dong">
             <option value="none">읍면동 선택</option>
           </select>
         </form>
@@ -71,7 +181,7 @@ const showDetails = (aptCode) => {
           id="list-btn"
           type="button"
         >
-          검색
+          지역 검색
         </button>
       </div>
 

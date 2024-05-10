@@ -37,8 +37,6 @@ onMounted(() => {
   const loginMember = localStorage.getItem('loginMember')
 
   if (loginMember) userInfo.value = JSON.parse(loginMember)
-
-  console.log(loginMember)
 })
 </script>
 

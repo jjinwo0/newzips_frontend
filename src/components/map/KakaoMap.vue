@@ -21,8 +21,8 @@ async function fetchUserLocation() {
     const { data } = await axios.get('https://ipinfo.io?token=3f6d40d101ffd6')
     const [latitude, longitude] = data.loc.split(',')
 
-    console.log(latitude)
-    console.log(longitude)
+    // console.log(latitude)
+    // console.log(longitude)
 
     initMap(parseFloat(latitude), parseFloat(longitude))
   } catch (error) {
