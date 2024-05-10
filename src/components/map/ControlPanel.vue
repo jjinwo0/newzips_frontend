@@ -1,5 +1,7 @@
 <script setup>
 import axios from 'axios'
+import { ref } from 'vue'
+import { useHouseStore } from '@/stores/house';
 import { ref, onMounted } from 'vue'
 import SearchDetail from './SearchDetail.vue';
 
@@ -9,6 +11,7 @@ const searchResult = ref([])
 const searchTradingInfoResult = ref([])
 
 const openDetail = ref(false)
+const store = useHouseStore()
 
 const sido = ref([])
 const gugun = ref([])
@@ -25,6 +28,7 @@ onMounted(() => {
 
 // 숫자 3자리마다 , 붙임
 const toNumberFormatOfKor = function(number) {
+const store = useHouseStore()
 
   if (number === undefined) {
     return '정보 없음'; // 또는 적절한 기본값
@@ -46,6 +50,7 @@ const searchByName = () => {
     .catch((err) => {
       console.error('이름 검색 예외 발생 :: ', err)
     })
+  store.searchByName(inputName.value)
 }
 
 // 아파트 거래내역 지역으로 검색
@@ -170,10 +175,13 @@ const gugunHandleChange = function() {
   }
 }
 
+  store.showDetails(aptCode);
+  console.log(store.openDetail)
+}
 </script>
 
 <template>
-  <div style="padding: 2.8em 2em 2em 2em;" v-if="!openDetail">
+  <div style="padding: 2.8em 2em 2em 2em;">
     <div class="left-handle">
       <div class="left-handle-menu">
         <ul>
@@ -216,7 +224,7 @@ const gugunHandleChange = function() {
       <!-- 아파트 정보 조회 결과 -->
       <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="searchResult.length > 0">
         <section id="listContSection">
-          <article v-for="apart in searchResult" :key="apart.aptCode" @click="showDetails(apart.aptCode)" class="block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
+          <article v-for="apart in store.searchResult" :key="apart.aptCode" @click="showDetails(apart.aptCode)" class="block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
             <div>
               <div class="grid font-semibold text-blue-500 flex flex-wrap items-center gap-1">
                 <div class="flex">
@@ -273,7 +281,7 @@ const gugunHandleChange = function() {
       <!-- 아파트 거래내역 정보 조회 결과 끝 -->
     </div>
 
-    <div style="padding: 2.8em 2em 2em 2em;" v-if="openDetail">
+    <div v-if="store.openDetail">
     <SearchDetail/>
     </div>
   </div>

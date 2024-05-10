@@ -5,11 +5,16 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import axios from 'axios'
 import ControlPanel from '@/components/map/ControlPanel.vue' // axios를 사용하여 HTTP 요청을 보냅니다.
+import { useHouseStore } from '@/stores/house'
+
+const store = useHouseStore()
 
 const map = ref(null)
+
+const marker = ref(null)
 
 onMounted(() => {
   fetchUserLocation()
@@ -21,10 +26,10 @@ async function fetchUserLocation() {
     const { data } = await axios.get('https://ipinfo.io?token=3f6d40d101ffd6')
     const [latitude, longitude] = data.loc.split(',')
 
-    // console.log(latitude)
-    // console.log(longitude)
+    store.nowLat = latitude
+    store.nowLng = longitude
 
-    initMap(parseFloat(latitude), parseFloat(longitude))
+    initMap(parseFloat(store.nowLat), parseFloat(store.nowLng))
   } catch (error) {
     console.error('위치 정보를 가져오는데 실패했습니다.', error)
     // 오류가 발생하면 기본 위치를 사용합니다.
@@ -60,4 +65,15 @@ function initMap(latitude, longitude) {
     document.head.appendChild(script)
   }
 }
+
+watch([() => store.nowLat, () => store.nowLng], ([lat, lng]) => {
+  if(map.value && lat && lng){
+    const moveLatLng = new kakao.maps.LatLng(lat, lng);
+    map.value.panTo(moveLatLng);
+
+    if (marker.value) {
+      marker.value.setPosition(moveLatLng)
+    }
+  }
+}, { immediate: true });
 </script>
