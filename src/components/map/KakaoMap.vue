@@ -1,5 +1,5 @@
 <template>
-  <div ref="map" class="container max-w-full h-screen">
+  <div ref="map" class="max-w-full h-screen">
     <ControlPanel />
   </div>
 </template>

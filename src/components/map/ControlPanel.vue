@@ -166,7 +166,7 @@ const toggleControlPanel = function() {
 
       <div class="flex input-cont">
         <input type="text" v-model="inputName" id="houseNameSearchForm" class="focus:outline-none flex-grow" style="flex-basis: 80%" placeholder="아파트명을 검색해보세요"/>
-        <button class="w-2/10 py-2.5 px-5 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" id="name-search-btn" @click="searchByName">
+        <button class="w-2/10 py-2.5 px-3 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" id="name-search-btn" @click="searchByName">
           검색
         </button>
       </div>
@@ -186,9 +186,9 @@ const toggleControlPanel = function() {
       </div>
       <!-- 시도/군구/읍면동 선택 끝 -->
 
-      <div class="mt-5">
+      <div class="mt-3">
         <button @click="searchTradeInfoListByDistrict"
-          class="w-full py-2.5 px-5 me-2 mb-2 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+          class="w-full py-2 me-2 mb-2 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
           id="list-btn"
           type="button"
         >

@@ -60,6 +60,7 @@ onMounted(() => {
         </template>
 
         <RouterLink to="/products">상품 목록</RouterLink>
+        <RouterLink to="/board">공지사항</RouterLink>
       </div>
     </nav>
   </div>
