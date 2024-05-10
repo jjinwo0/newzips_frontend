@@ -20,6 +20,8 @@ export const useHouseStore = defineStore('house', () => {
   const searchByName = (name) => {
     axios.get(`http://localhost:8080/house/list/name/${name}`)
       .then((res) => {
+        searchResult.value = ''
+        searchTradingInfoResult.value = ''
         console.log(res.data)
         searchResult.value = res.data
       })
