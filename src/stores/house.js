@@ -6,6 +6,7 @@ import axios from 'axios'
 const REST_HOUSE_API = `http://localhost:8080/house`
 
 const searchResult = ref([])
+const searchTradingInfoResult = ref([])
 
 const openDetail = ref(false)
 
@@ -42,7 +43,20 @@ export const useHouseStore = defineStore('house', () => {
       })
   }
 
+  const searchTradeInfoListByDistrict = (selectedDong) => {
+    
+    axios.get(`http://localhost:8080/house/list/code/${selectedDong}`)
+    .then((res) => {
+      searchResult.value = ''
+      searchTradingInfoResult.value = ''
+      searchTradingInfoResult.value = res.data
+    })
+    .catch((err) => {
+      console.error('지역 검색 예외 발생 :: ', err)
+    })
+  }
+
   return {
-    REST_HOUSE_API, searchResult, searchByName, showDetails, openDetail, detailData, nowLat, nowLng
+    REST_HOUSE_API, searchResult, searchByName, showDetails, openDetail, detailData, nowLat, nowLng, searchTradeInfoListByDistrict, searchTradingInfoResult
   }
 })

@@ -1,14 +1,10 @@
 <script setup>
 import axios from 'axios'
-import { ref } from 'vue'
 import { useHouseStore } from '@/stores/house';
 import { ref, onMounted } from 'vue'
 import SearchDetail from './SearchDetail.vue';
 
 const inputName = ref('')
-
-const searchResult = ref([])
-const searchTradingInfoResult = ref([])
 
 const openDetail = ref(false)
 const store = useHouseStore()
@@ -40,30 +36,12 @@ const store = useHouseStore()
 
 // 아파트 이름으로 검색
 const searchByName = () => {
-  axios
-    .get(`http://localhost:8080/house/list/name/${inputName.value}`)
-    .then((res) => {
-      searchResult.value = ''
-      searchTradingInfoResult.value = ''
-      searchResult.value = res.data
-    })
-    .catch((err) => {
-      console.error('이름 검색 예외 발생 :: ', err)
-    })
   store.searchByName(inputName.value)
 }
 
 // 아파트 거래내역 지역으로 검색
 const searchTradeInfoListByDistrict = function() {
-  axios.get(`http://localhost:8080/house/list/code/${selectedDong.value}`)
-    .then((res) => {
-      searchResult.value = ''
-      searchTradingInfoResult.value = ''
-      searchTradingInfoResult.value = res.data
-    })
-    .catch((err) => {
-      console.error('지역 검색 예외 발생 :: ', err)
-    })
+  store.searchTradeInfoListByDistrict(selectedDong.value)
 }
 
 const showDetails = (aptCode) => {
@@ -174,10 +152,6 @@ const gugunHandleChange = function() {
     initOption(dong);
   }
 }
-
-  store.showDetails(aptCode);
-  console.log(store.openDetail)
-}
 </script>
 
 <template>
@@ -222,7 +196,7 @@ const gugunHandleChange = function() {
       </div>
 
       <!-- 아파트 정보 조회 결과 -->
-      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="searchResult.length > 0">
+      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="store.searchResult.length > 0">
         <section id="listContSection">
           <article v-for="apart in store.searchResult" :key="apart.aptCode" @click="showDetails(apart.aptCode)" class="block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
             <div>
@@ -249,9 +223,9 @@ const gugunHandleChange = function() {
       <!-- 아파트 정보 조회 결과 끝 -->
 
       <!-- 아파트 거래내역 정보 조회 결과 -->
-      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="searchTradingInfoResult.length > 0">
+      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="store.searchTradingInfoResult.length > 0">
         <section id="listContSection">
-          <article v-for="(tradingInfo, index) in searchTradingInfoResult" :key="index" @click="showDetails(tradingInfo.aptCode)">
+          <article v-for="(tradingInfo, index) in store.searchTradingInfoResult" :key="index" @click="showDetails(tradingInfo.aptCode)">
             <div class="block block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
               <div class="flex justify-between">
                 <h2 class="max-w-[14rem] font-semibold text-blue-500 flex flex-wrap items-center gap-1">
