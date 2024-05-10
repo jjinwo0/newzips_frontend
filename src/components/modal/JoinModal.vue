@@ -9,7 +9,7 @@ const props = defineProps({
 const emit = defineEmits(['update'])
 
 const joinForm = ref({
-  userId: '',
+  username: '',
   email: '',
   password: ''
 })
@@ -34,9 +34,9 @@ watch(
 
 const validUserId = () => {
 
-  if(joinForm.value.userId.includes(' ')){
+  if(joinForm.value.username.includes(' ')){
     validUserIdResult.value = 'ID에 공백 문자는 포함할 수 없습니다.'
-  }else if(joinForm.value.userId.length > 0 && joinForm.value.userId.length < 4){
+  }else if(joinForm.value.username.length > 0 && joinForm.value.username.length < 4){
     validUserIdResult.value = 'ID는 최소 4자리 이상입니다.'
   } else  {
     validUserIdResult.value = '';
@@ -57,7 +57,7 @@ const validEmail = () => {
 }
 
 const validId = () => {
-  axios.get(`http://localhost:8080/member/valid/${joinForm.value.userId}`)
+  axios.get(`http://localhost:8080/member/valid/${joinForm.value.username}`)
   .then(() => {
     const confirm = window.confirm('사용 가능한 ID입니다. 사용하시겠습니까?');
     isConfirmed.value = confirm; // 사용자가 '확인'을 누른 경우 isConfirmed를 true로 설정
@@ -71,7 +71,7 @@ const validId = () => {
 }
 
 const joinMember = () => {
-  console.log(joinForm.value.userId)
+  console.log('회원가입 : '+joinForm.value.username + ' ' +  joinForm.value.password + ' ' + joinForm.value.email)
   axios.post('http://localhost:8080/member/join', joinForm.value)
     .then(response => {
       // 회원가입 성공 시의 처리 로직
@@ -111,7 +111,7 @@ const joinMember = () => {
             <div class="mb-4">
               <div class="form-group mb-4" style="display: flex; align-items: center; gap: 5px;">
                 <label for="userId" class="block text-gray-700 text-sm font-bold mb-0 flex-none" style="width: 80px;">아이디</label>
-                <input type="text" v-model="joinForm.userId" @keyup="validUserId" id="userId" name="userId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-auto" required>
+                <input type="text" v-model="joinForm.username" @keyup="validUserId" id="userId" name="userId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-auto" required>
                 <button @click="validId" class="py-2.5 px-5 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 flex-none" style="width: 100px;">중복확인</button>
               </div>
               <span class="text-sm flex-none" style="color: red; ">{{ validUserIdResult }}</span>

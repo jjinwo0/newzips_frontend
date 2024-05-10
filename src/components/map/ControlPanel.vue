@@ -197,7 +197,7 @@ const toggleControlPanel = function() {
       </div>
 
       <!-- 아파트 정보 조회 결과 -->
-      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="store.searchResult.length > 0">
+      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="store.searchResult.length > 0 && store.openControlPanel">
         <section id="listContSection">
           <article v-for="apart in store.searchResult" :key="apart.aptCode" @click="showDetails(apart.aptCode)" class="block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
             <div>
@@ -256,8 +256,8 @@ const toggleControlPanel = function() {
       </div>
 
       <div class="text-center" v-if="(store.searchResult.length > 0) || (store.searchTradingInfoResult.length > 0)">
-        <button @click="toggleControlPanel" v-if="store.openControlPanel"><i class="fa-solid fa-chevron-up"></i></button>
-        <button @click="toggleControlPanel" v-if="!store.openControlPanel"><i class="fa-solid fa-chevron-down"></i></button>
+        <button @click="toggleControlPanel" v-if="store.openControlPanel" style="width: 50px" ><i class="fa-solid fa-chevron-up"></i></button>
+        <button @click="toggleControlPanel" v-if="!store.openControlPanel" style="width: 50px" ><i class="fa-solid fa-chevron-down"></i></button>
       </div>
     </div>
 

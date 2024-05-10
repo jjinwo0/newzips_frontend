@@ -55,7 +55,7 @@ onMounted(() => {
         </template>
 
         <template v-else>
-          {{ userInfo.username }}님, 로그인 하였습니다.
+          <div style="padding: 10px 15px;">안녕하세요 <span class="font-bold">{{ userInfo.username }}</span> 님</div>
           <a href="#" @click="logout">로그아웃</a>
         </template>
 
