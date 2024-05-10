@@ -1,10 +1,13 @@
 <script setup>
 import axios from 'axios'
 import { ref } from 'vue'
+import SearchDetail from './SearchDetail.vue';
 
 const inputName = ref('')
 
 const searchResult = ref([])
+
+const openDetail = ref(false)
 
 const searchByName = () => {
   axios
@@ -17,10 +20,22 @@ const searchByName = () => {
       console.error('이름 검색 예외 발생 :: ', err)
     })
 }
+
+const showDetails = (aptCode) => {
+  axios
+    .get(`http://localhost:8080/house/detail/${aptCode}`)
+    .then((res) => {
+      console.log(res)
+      openDetail.value = true;
+    })
+    .catch((err) => {
+      console.error('조회 에러 발생 :: ', err)
+    })
+} 
 </script>
 
 <template>
-  <div style="padding: 2.8em 2em 2em 2em;">
+  <div style="padding: 2.8em 2em 2em 2em;" v-if="!openDetail">
     <div class="left-handle">
       <div class="left-handle-menu">
         <ul>
@@ -62,7 +77,7 @@ const searchByName = () => {
 
       <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="searchResult.length > 0">
         <section id="listContSection">
-          <article v-for="apart in searchResult" :key="apart.aptCode" @click="showDetails(item)" class="block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
+          <article v-for="apart in searchResult" :key="apart.aptCode" @click="showDetails(apart.aptCode)" class="block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
             <div>
               <div class="grid font-semibold text-blue-500 flex flex-wrap items-center gap-1">
                 <div class="flex">
@@ -71,11 +86,11 @@ const searchByName = () => {
                 </div>
                 <div class="flex">
                   <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6">도로명</span>
-                  <span class="text-sm text-black font-normal ml-1">{{ apart.roadName }}</span>
+                  <span class="text-sm text-black font-normal ml-1">{{ apart.dorojuso }}</span>
                 </div>
                 <div class="flex">
                   <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6">지번</span>
-                  <span class="text-sm text-black font-normal ml-1">{{ apart.jibun }}</span>
+                  <span class="text-sm text-black font-normal ml-1">{{ apart.jibunjuso }}</span>
                 </div>
               </div>
             </div>
@@ -85,8 +100,8 @@ const searchByName = () => {
       <div v-else></div>
     </div>
 
-    <div id="detailsContainer" class="left-handle mt-4 close fade-in-out">
-      <button id="BtnDetailsContainer" onclick="hideDetailsContainer()">X</button>
+    <div style="padding: 2.8em 2em 2em 2em;" v-if="openDetail">
+    <SearchDetail/>
     </div>
   </div>
   <!-- 좌측 조작화면 끝 -->
