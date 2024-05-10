@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
+import axios from 'axios';
 
 const props = defineProps({
   show: Boolean
@@ -21,6 +22,7 @@ const matchPassword = ref(false)
 const confirmPassword = ref('')
 const validUserIdResult = ref('')
 const validEmailResult = ref('')
+const isConfirmed = ref(false)
 
 watch(
   [() => joinForm.value.password, () => confirmPassword.value],
@@ -29,29 +31,6 @@ watch(
   },
   { immediate: true }
 ) // 컴포넌트가 마운트될 때 즉시 실행되도록 immediate 옵션 추가
-
-const handleJoin = () => {
-  console.log('Join attempt with:', joinForm.value.username, joinForm.value.password)
-
-  fetch('http://localhost:8080/member/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-
-    body: JSON.stringify(joinForm.value)
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log('login success: ', data)
-      localStorage.setItem('loginMember', JSON.stringify(data))
-      closeModal() // 로그인 성공 후 모달 닫기
-      location.reload()
-    })
-    .catch((err) => {
-      console.error('Login failed: ', err)
-    })
-}
 
 const validUserId = () => {
 
@@ -76,6 +55,37 @@ const validEmail = () => {
     validEmailResult.value = ''
   }
 }
+
+const validId = () => {
+  axios.get(`http://localhost:8080/member/valid/${joinForm.value.userId}`)
+  .then(() => {
+    const confirm = window.confirm('사용 가능한 ID입니다. 사용하시겠습니까?');
+    isConfirmed.value = confirm; // 사용자가 '확인'을 누른 경우 isConfirmed를 true로 설정
+    console.log(isConfirmed.value)
+  })
+  .catch(() => {
+    alert('중복된 ID 입니다.');
+    isConfirmed.value = false; // 중복된 ID인 경우 isConfirmed를 false로 설정
+    console.log(isConfirmed.value)
+  })
+}
+
+const joinMember = () => {
+  console.log(joinForm.value.userId)
+  axios.post('http://localhost:8080/member/join', joinForm.value)
+    .then(response => {
+      // 회원가입 성공 시의 처리 로직
+      console.log('회원가입 성공:', response.data);
+      alert('회원가입이 성공적으로 완료되었습니다.');
+      closeModal();
+      location.reload();
+    })
+    .catch(error => {
+      // 회원가입 실패 시의 처리 로직
+      console.error('회원가입 실패:', error);
+      alert('회원가입 과정에서 오류가 발생하였습니다. 다시 시도해주세요.');
+    });
+}
 </script>
 
 <template>
@@ -97,12 +107,12 @@ const validEmail = () => {
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5 space-y-4">
-          <form @submit.prevent="handleJoin">
+          <form @submit.prevent="joinMember">
             <div class="mb-4">
               <div class="form-group mb-4" style="display: flex; align-items: center; gap: 5px;">
                 <label for="userId" class="block text-gray-700 text-sm font-bold mb-0 flex-none" style="width: 80px;">아이디</label>
                 <input type="text" v-model="joinForm.userId" @keyup="validUserId" id="userId" name="userId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-auto" required>
-                <button class="py-2.5 px-5 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 flex-none" style="width: 100px;">중복확인</button>
+                <button @click="validId" class="py-2.5 px-5 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 flex-none" style="width: 100px;">중복확인</button>
               </div>
               <span class="text-sm flex-none" style="color: red; ">{{ validUserIdResult }}</span>
 
@@ -125,12 +135,10 @@ const validEmail = () => {
               <span v-if="confirmPassword.length > 0 && matchPassword" class="text-sm" style="color: green">비밀번호가 일치합니다.</span>
               <span v-if="confirmPassword.length > 0 && !matchPassword" class="text-sm" style="color: red">비밀번호가 일치하지 않습니다.</span>
 
-            <div class="flex items-center justify-between">
-              <button class="w-full py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+              <button :disabled="!isConfirmed" class="w-full py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                       type="submit">
                 회원가입
               </button>
-            </div>
 
           </form>
 
