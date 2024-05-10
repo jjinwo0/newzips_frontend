@@ -5,19 +5,17 @@ import { ref, onMounted } from 'vue'
 import SearchDetail from './SearchDetail.vue';
 
 const inputName = ref('')
-
 const openDetail = ref(false)
 const store = useHouseStore()
 
 const sido = ref([])
 const gugun = ref([])
 const dong = ref([])
-const selectedSido = ref('none')
-const selectedGugun = ref('none')
-const selectedDong = ref('none')
+const selectedSido = ref('')
+const selectedGugun = ref('')
+const selectedDong = ref('')
 
 onMounted(() => {
-
   // 브라우저가 열리면 시도정보 얻기
   sendRequest(sido, "*00000000");
 })
@@ -63,9 +61,10 @@ const sendRequest = function(selid, regcode) {
 const addOption = function(selid, data) {
   let opt = ``;
   initOption(selid);
+
   switch (selid.value.id) {
     case "sido":
-      opt += `<option value="">시도선택</option>`;
+      opt += `<option value="">시도 선택</option>`;
       data.regcodes.forEach(function (regcode) {
         opt += `
                 <option value="${regcode.code}">${regcode.name}</option>
@@ -73,7 +72,7 @@ const addOption = function(selid, data) {
       });
       break;
     case "gugun":
-      opt += `<option value="">구군선택</option>`;
+      opt += `<option value="">군구 선택</option>`;
       for (let i = 0; i < data.regcodes.length; i++) {
         if (i != data.regcodes.length - 1) {
           if (
@@ -96,7 +95,7 @@ const addOption = function(selid, data) {
       });
       break;
     case "dong":
-      opt += `<option value="">동선택</option>`;
+      opt += `<option value="">읍면동 선택</option>`;
       let idx = 2;
       data.regcodes.forEach(function (regcode) {
         if (regcode.name.split(" ").length != 3) idx = 3;
@@ -115,16 +114,19 @@ const initOption = function(selid) {
   let opt = ``;
 
   if(selid.value.id == 'gugun') {
-    opt += `<option value="">구군선택</option>`;
+    opt += `<option value="">군구 선택</option>`;
   }
   if(selid.value.id == 'dong') {
-    opt += `<option value="">동선택</option>`;
+    opt += `<option value="">읍면동 선택</option>`;
   }
   selid.value.innerHTML = opt;
 }
 
 // 시도가 바뀌면 구군정보 얻기.
 const sidoHandleChange = function() {
+  selectedGugun.value = ''
+  selectedDong.value = ''
+
   if (selectedSido.value) {
     if(selectedSido.value == '') return;
     let regcode = selectedSido.value.substr(0, 2) + "*00000";
@@ -137,18 +139,25 @@ const sidoHandleChange = function() {
 
 // 구군이 바뀌면 동 정보 얻기
 const gugunHandleChange = function() {
+  selectedDong.value = ''
+
   if (selectedGugun.value) {
     let regcode = selectedGugun.value.substr(0, 5) + "*";
     sendRequest(dong, regcode);
   } else {
+
     initOption(dong);
   }
+}
+
+const toggleControlPanel = function() {
+  store.openControlPanel = !store.openControlPanel
 }
 </script>
 
 <template>
   <div style="padding: 2.8em 2em 2em 2em;">
-    <div class="left-handle">
+    <div class="left-handle" :class="{'min-h-85': (store.searchResult.length > 0 || store.searchTradingInfoResult.length > 0) && store.openControlPanel}">
       <div class="left-handle-menu">
         <ul>
           <li class="list-selected">아파트</li>
@@ -165,13 +174,13 @@ const gugunHandleChange = function() {
       <div class="left-handle-selector">
         <form id="houseSearchForm" style="display: flex; width: 100%; justify-content: space-around;">
           <select class="custom-selector" id="sido" name="sido" v-model="selectedSido" @change="sidoHandleChange" ref="sido">
-            <option value="none">시도 선택</option>
+            <option value="">시도 선택</option>
           </select>
           <select class="custom-selector" id="gugun" name="gugun" v-model="selectedGugun" @change="gugunHandleChange" ref="gugun">
-            <option value="none">군구 선택</option>
+            <option value="">군구 선택</option>
           </select>
           <select class="custom-selector" id="dong" name="dong" v-model="selectedDong" ref="dong">
-            <option value="none">읍면동 선택</option>
+            <option value="">읍면동 선택</option>
           </select>
         </form>
       </div>
@@ -210,12 +219,10 @@ const gugunHandleChange = function() {
           </article>
         </section>
       </div>
-
-      <div v-else></div>
       <!-- 아파트 정보 조회 결과 끝 -->
 
       <!-- 아파트 거래내역 정보 조회 결과 -->
-      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="store.searchTradingInfoResult.length > 0">
+      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="store.searchTradingInfoResult.length > 0 && store.openControlPanel">
         <section id="listContSection">
           <article v-for="(tradingInfo, index) in store.searchTradingInfoResult" :key="index" @click="showDetails(tradingInfo.aptCode)">
             <div class="block block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
@@ -243,8 +250,15 @@ const gugunHandleChange = function() {
           </article>
         </section>
       </div>
-
       <!-- 아파트 거래내역 정보 조회 결과 끝 -->
+      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar text-center" v-if="store.isResultEmpty">
+        <span>조회결과 없음</span>
+      </div>
+
+      <div class="text-center" v-if="(store.searchResult.length > 0) || (store.searchTradingInfoResult.length > 0)">
+        <button @click="toggleControlPanel" v-if="store.openControlPanel"><i class="fa-solid fa-chevron-up"></i></button>
+        <button @click="toggleControlPanel" v-if="!store.openControlPanel"><i class="fa-solid fa-chevron-down"></i></button>
+      </div>
     </div>
 
     <div v-if="store.openDetail">

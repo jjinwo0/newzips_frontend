@@ -99,6 +99,10 @@ h1 {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+.min-h-85 {
+    min-height: 85%;
+}
+
 .left-handle-menu {
     font-size: 20px;
     text-align: center;
@@ -133,5 +137,5 @@ h1 {
 }
 
 #listContSection {
-    height: 400px;
+    height: 52vh;
 }
