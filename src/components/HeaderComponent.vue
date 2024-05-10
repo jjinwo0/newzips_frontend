@@ -14,9 +14,9 @@ const openJoinModal = () => {
 }
 
 const logout = () => {
-  const id = userInfo.value.id
+  const id = userInfo.value.username
 
-  fetch(`http://localhost:8080/member/logout/${id}`, {
+  fetch(`http://localhost:8080/member/logout`, {
     method: 'POST'
   })
     .then((res) => {
