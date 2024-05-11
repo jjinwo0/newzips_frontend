@@ -19,6 +19,11 @@ const openDetail = ref(false)
 // 상세정보 창에 표시되는 내용
 const detailData = ref([])
 
+// 상세정보 창 닫기
+const closeOpenDetail = () => {
+  openDetail.value = !openDetail.value
+}
+
 // 위도 경도
 const nowLat = ref('')
 const nowLng = ref('')
@@ -57,7 +62,6 @@ export const useHouseStore = defineStore('house', () => {
     axios
       .get(`http://localhost:8080/house/detail/${aptCode}`)
       .then((res) => {
-        console.log(res)
         openDetail.value = true;
         detailData.value = res.data;
         nowLat.value = res.data[0].lat;
@@ -100,6 +104,6 @@ export const useHouseStore = defineStore('house', () => {
   return {
     REST_HOUSE_API, searchResult, searchByName, showDetails, openDetail,
     detailData, nowLat, nowLng, searchTradeInfoListByDistrict, searchTradingInfoResult,
-    isResultEmpty, openControlPanel
+    isResultEmpty, openControlPanel,closeOpenDetail
   }
 })

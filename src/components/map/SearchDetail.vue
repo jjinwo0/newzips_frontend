@@ -8,8 +8,6 @@ const detail = ref(store.detailData);
 
 const dealChartRef = ref(null)
 
-console.log(detail.value)
-
 onMounted( () => {
   if(dealChartRef.value) {
     const ctx = dealChartRef.value.getContext('2d');
@@ -47,8 +45,15 @@ onMounted( () => {
 
 <template>
     <div class="left-handle" style="height: 86vh">
+
         <div class="left-handle-menu">
-          <div class="text-2xl ">{{ detail[0].apartmentName }}</div>
+          <div class="float-right">
+            <button class="btn-close text-xl" @click="store.closeOpenDetail"><i class="fa-solid fa-x"></i></button>
+          </div>
+          <div class="text-2xl ">
+            <div>{{ detail[0].apartmentName }}</div>
+
+          </div>
           <div>
             <p class="text-base">최근 거래 내역</p>
             <canvas ref="dealChartRef" width="400" height="400"></canvas>

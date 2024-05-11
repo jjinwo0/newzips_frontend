@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios'
 import { useHouseStore } from '@/stores/house';
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import SearchDetail from './SearchDetail.vue';
 
 const inputName = ref('')
@@ -153,12 +153,23 @@ const gugunHandleChange = function() {
 const toggleControlPanel = function() {
   store.openControlPanel = !store.openControlPanel
 }
+
+const toggleAnimation = computed(() => {
+  if((store.searchResult.length > 0 || store.searchTradingInfoResult.length > 0) && store.openControlPanel) {
+    return {'max-height': '86%'}
+  }
+})
+
+
+
 </script>
+
+
 
 <template>
   <div style="padding: 2.8em 2em 2em 2em;">
-    <div class="left-handle" :class="{'min-h-85': (store.searchResult.length > 0 || store.searchTradingInfoResult.length > 0) && store.openControlPanel}"
-    style="display: flex;flex-direction: column;justify-content: space-between;">
+    <div class="left-handle" :style="toggleAnimation" :class="{'max-h-36':!store.openControlPanel}"
+    style="display: flex; flex-direction: column; justify-content: space-between; transition: 0.6s; overflow: hidden;">
       <div>
         <div class="left-handle-menu">
           <ul>
@@ -168,8 +179,8 @@ const toggleControlPanel = function() {
 
         <div class="flex input-cont">
           <input type="text" v-model="inputName" id="houseNameSearchForm" class="focus:outline-none flex-grow" style="flex-basis: 80%" placeholder="아파트명을 검색해보세요"/>
-          <button class="w-2/10 py-2.5 px-3 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" id="name-search-btn" @click="searchByName">
-            검색
+          <button class="w-2/10 py-2.5 px-3 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" id="name-search-btn" @click="searchByName" style="width: 26%">
+            아파트 검색
           </button>
         </div>
 
@@ -194,7 +205,7 @@ const toggleControlPanel = function() {
             id="list-btn"
             type="button"
           >
-            지역 검색
+            지역 거래 검색
           </button>
         </div>
 

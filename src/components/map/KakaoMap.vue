@@ -2,6 +2,8 @@
   <div ref="map" class="max-w-full h-screen">
     <ControlPanel />
   </div>
+
+
 </template>
 
 <script setup>
@@ -67,25 +69,25 @@ watch([() => store.nowLat, () => store.nowLng], ([lat, lng], [oldLat, oldLng]) =
     const moveLatLng = new kakao.maps.LatLng(lat, lng);
     map.value.panTo(moveLatLng);
 
-    // 마커 이미지 URL
-    const markerImageUrl = '../../src/assets/pin-icon.png';
-    const imageSize = new kakao.maps.Size(64, 69);
-    const imageOption = {offset: new kakao.maps.Point(27, 69)};
-
-    const markerImage = new kakao.maps.MarkerImage(markerImageUrl, imageSize, imageOption);
-
-    const markerPosition  = new kakao.maps.LatLng(lat, lng);
-
-    if (currentMarker !== null) {
-      currentMarker.setMap(null); // 기존 마커가 있다면 지도에서 제거
-    }
-
-    currentMarker = new kakao.maps.Marker({
-      position: markerPosition,
-      image: markerImage
-    });
-
-    currentMarker.setMap(map.value);
+    // // 마커 이미지 URL
+    // const markerImageUrl = '../../src/assets/pin-icon.png';
+    // const imageSize = new kakao.maps.Size(64, 69);
+    // const imageOption = {offset: new kakao.maps.Point(27, 69)};
+    //
+    // const markerImage = new kakao.maps.MarkerImage(markerImageUrl, imageSize, imageOption);
+    //
+    // const markerPosition  = new kakao.maps.LatLng(lat, lng);
+    //
+    // if (currentMarker !== null) {
+    //   currentMarker.setMap(null); // 기존 마커가 있다면 지도에서 제거
+    // }
+    //
+    // currentMarker = new kakao.maps.Marker({
+    //   position: markerPosition,
+    //   image: markerImage
+    // });
+    //
+    // currentMarker.setMap(map.value);
   }
 }, { immediate: true });
 </script>
