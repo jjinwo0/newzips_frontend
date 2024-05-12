@@ -1,8 +1,8 @@
 <script setup>
 import axios from 'axios'
 import { useHouseStore } from '@/stores/house';
-import { ref, onMounted } from 'vue'
-import SearchDetail from './SearchDetail.vue';
+import { ref, onMounted, computed } from 'vue'
+import HouseDetail from './HouseDetail.vue';
 
 const inputName = ref('')
 const openDetail = ref(false)
@@ -14,6 +14,9 @@ const dong = ref([])
 const selectedSido = ref('')
 const selectedGugun = ref('')
 const selectedDong = ref('')
+
+// 검색 조건 라디오 변수
+const searchCondition = ref('searchByApartName');
 
 onMounted(() => {
   // 브라우저가 열리면 시도정보 얻기
@@ -150,111 +153,139 @@ const gugunHandleChange = function() {
   }
 }
 
+// 컨트롤 패널 접기 열기
 const toggleControlPanel = function() {
   store.openControlPanel = !store.openControlPanel
 }
+
+const toggleAnimation = computed(() => {
+  if((store.searchResult.length > 0 || store.searchTradingInfoResult.length > 0) && store.openControlPanel) {
+    return {'max-height': '86%'}
+  }
+})
+
+
+
 </script>
+
+
 
 <template>
   <div style="padding: 2.8em 2em 2em 2em;">
-    <div class="left-handle" :class="{'min-h-85': (store.searchResult.length > 0 || store.searchTradingInfoResult.length > 0) && store.openControlPanel}">
-      <div class="left-handle-menu">
-        <ul>
-          <li class="list-selected">아파트</li>
-        </ul>
-      </div>
+    <div class="left-handle" :style="toggleAnimation" :class="{'max-h-36':!store.openControlPanel}"
+    style="display: flex; flex-direction: column; justify-content: space-between; transition: 0.6s; overflow: hidden;">
+      <div>
+        <div class="left-handle-menu flex justify-between">
+          <ul>
+            <li class="list-selected">아파트</li>
+          </ul>
 
-      <div class="flex input-cont">
-        <input type="text" v-model="inputName" id="houseNameSearchForm" class="focus:outline-none flex-grow" style="flex-basis: 80%" placeholder="아파트명을 검색해보세요"/>
-        <button class="w-2/10 py-2.5 px-3 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" id="name-search-btn" @click="searchByName">
-          검색
-        </button>
-      </div>
-
-      <div class="left-handle-selector">
-        <form id="houseSearchForm" style="display: flex; width: 100%; justify-content: space-around;">
-          <select class="custom-selector" id="sido" name="sido" v-model="selectedSido" @change="sidoHandleChange" ref="sido">
-            <option value="">시도 선택</option>
-          </select>
-          <select class="custom-selector" id="gugun" name="gugun" v-model="selectedGugun" @change="gugunHandleChange" ref="gugun">
-            <option value="">군구 선택</option>
-          </select>
-          <select class="custom-selector" id="dong" name="dong" v-model="selectedDong" ref="dong">
-            <option value="">읍면동 선택</option>
-          </select>
-        </form>
-      </div>
-      <!-- 시도/군구/읍면동 선택 끝 -->
-
-      <div class="mt-3">
-        <button @click="searchTradeInfoListByDistrict"
-          class="w-full py-2 me-2 mb-2 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-          id="list-btn"
-          type="button"
-        >
-          지역 검색
-        </button>
-      </div>
-
-      <!-- 아파트 정보 조회 결과 -->
-      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="store.searchResult.length > 0 && store.openControlPanel">
-        <section id="listContSection">
-          <article v-for="apart in store.searchResult" :key="apart.aptCode" @click="showDetails(apart.aptCode)" class="block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
-            <div>
-              <div class="grid font-semibold text-blue-500 flex flex-wrap items-center gap-1">
-                <div class="flex">
-                  <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6 mr-1">아파트명</span>
-                  <p class="h3">{{ apart.apartmentName }}</p>
-                </div>
-                <div class="flex">
-                  <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6">도로명</span>
-                  <span class="text-sm text-black font-normal ml-1">{{ apart.dorojuso }}</span>
-                </div>
-                <div class="flex">
-                  <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6">지번</span>
-                  <span class="text-sm text-black font-normal ml-1">{{ apart.jibunjuso }}</span>
-                </div>
+            <div class="bg-gray-200 rounded-lg text-xs inline-block">
+              <div class="inline-flex rounded-lg">
+                <input type="radio" name="searchByApartName" id="searchByApartName" value="searchByApartName" checked hidden v-model="searchCondition" />
+                <label for="searchByApartName" class="radio text-center self-center py-2 px-4 rounded-lg cursor-pointer hover:opacity-75">아파트명 검색</label>
+              </div>
+              <div class="inline-flex rounded-lg">
+                <input type="radio" name="searchByDistrict" id="searchByDistrict" value="searchByDistrict" hidden v-model="searchCondition" />
+                <label for="searchByDistrict" class="radio text-center self-center py-2 px-4 rounded-lg cursor-pointer hover:opacity-75">지역 검색</label>
               </div>
             </div>
-          </article>
-        </section>
-      </div>
-      <!-- 아파트 정보 조회 결과 끝 -->
+        </div>
 
-      <!-- 아파트 거래내역 정보 조회 결과 -->
-      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="store.searchTradingInfoResult.length > 0 && store.openControlPanel">
-        <section id="listContSection">
-          <article v-for="(tradingInfo, index) in store.searchTradingInfoResult" :key="index" @click="showDetails(tradingInfo.aptCode)">
-            <div class="block block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
-              <div class="flex justify-between">
-                <h2 class="max-w-[14rem] font-semibold text-blue-500 flex flex-wrap items-center gap-1">
-                  {{tradingInfo.apartmentName}}
-                  <span class="text-sm text-black font-normal">
-                    {{tradingInfo.floor}}층 {{tradingInfo.exclusiveArea }}평
-                  </span>
-                </h2>
-                <div class="flex justify-between">
-                  <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6 m-0 h-6">
-                    {{tradingInfo.dealDate}}
-                  </span>
-                </div>
-              </div>
+        <div class="flex input-cont"  v-show="searchCondition === 'searchByApartName' ">
+          <input type="text" v-model="inputName" id="houseNameSearchForm" class="focus:outline-none flex-grow" style="flex-basis: 80%" placeholder="아파트명을 검색해보세요"/>
+          <button class="w-2/10 py-2.5 px-3 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" id="name-search-btn" @click="searchByName">
+            검색
+          </button>
+        </div>
 
+        <div v-show="searchCondition === 'searchByDistrict' ">
+          <div class="left-handle-selector">
+            <form id="houseSearchForm" style="display: flex; width: 100%; justify-content: space-around;">
+              <select class="custom-selector" id="sido" name="sido" v-model="selectedSido" @change="sidoHandleChange" ref="sido">
+                <option value="">시도 선택</option>
+              </select>
+              <select class="custom-selector" id="gugun" name="gugun" v-model="selectedGugun" @change="gugunHandleChange" ref="gugun">
+                <option value="">군구 선택</option>
+              </select>
+              <select class="custom-selector" id="dong" name="dong" v-model="selectedDong" ref="dong">
+                <option value="">읍면동 선택</option>
+              </select>
+            </form>
+          </div>
+          <!-- 시도/군구/읍면동 선택 끝 -->
+
+          <div class="mt-3">
+            <button @click="searchTradeInfoListByDistrict"
+              class="w-full py-2 me-2 mb-2 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+              id="list-btn"
+              type="button"
+            >
+              지역 거래 검색
+            </button>
+          </div>
+       </div>
+
+        <!-- 아파트 정보 조회 결과 -->
+        <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="store.searchResult.length > 0 && store.openControlPanel">
+          <section id="listContSection">
+            <article v-for="apart in store.searchResult" :key="apart.aptCode" @click="showDetails(apart.aptCode)" class="block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
               <div>
-                <span class="text-xl text-black font-bold">
-                  {{toNumberFormatOfKor(tradingInfo.dealAmount)}} 만원
-                </span>
+                <div class="grid font-semibold text-blue-500 flex flex-wrap items-center gap-1">
+                  <div class="flex">
+                    <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6 mr-1">아파트명</span>
+                    <p class="h3">{{ apart.apartmentName }}</p>
+                  </div>
+                  <div class="flex">
+                    <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6">도로명</span>
+                    <span class="text-sm text-black font-normal ml-1">{{ apart.dorojuso }}</span>
+                  </div>
+                  <div class="flex">
+                    <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6">지번</span>
+                    <span class="text-sm text-black font-normal ml-1">{{ apart.jibunjuso }}</span>
+                  </div>
+                </div>
               </div>
+            </article>
+          </section>
+        </div>
+        <!-- 아파트 정보 조회 결과 끝 -->
 
-            </div>
-          </article>
-        </section>
-      </div>
-      <!-- 아파트 거래내역 정보 조회 결과 끝 -->
-      <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar text-center" v-if="store.isResultEmpty">
-        <span>조회결과 없음</span>
-      </div>
+        <!-- 아파트 거래내역 정보 조회 결과 -->
+        <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="store.searchTradingInfoResult.length > 0 && store.openControlPanel">
+          <section id="listContSection">
+            <article v-for="(tradingInfo, index) in store.searchTradingInfoResult" :key="index" @click="showDetails(tradingInfo.aptCode)">
+              <div class="block block mb-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 cursor-pointer">
+                <div class="flex justify-between">
+                  <h2 class="max-w-[14rem] font-semibold text-blue-500 flex flex-wrap items-center gap-1">
+                    {{tradingInfo.apartmentName}}
+                    <span class="text-sm text-black font-normal">
+                      {{tradingInfo.floor}}층 {{tradingInfo.exclusiveArea }}평
+                    </span>
+                  </h2>
+                  <div class="flex justify-between">
+                    <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-200 text-blue-800 dark:text-purple-900 px-2.5 py-0.5 rounded flex items-center justify-center m-0 h-6 m-0 h-6">
+                      {{tradingInfo.dealDate}}
+                    </span>
+                  </div>
+                </div>
 
+                <div>
+                  <span class="text-xl text-black font-bold">
+                    {{toNumberFormatOfKor(tradingInfo.dealAmount)}} 만원
+                  </span>
+                </div>
+
+              </div>
+            </article>
+          </section>
+        </div>
+        <!-- 아파트 거래내역 정보 조회 결과 끝 -->
+        <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar text-center" v-if="store.isResultEmpty">
+          <span>조회결과 없음</span>
+        </div>
+
+      </div>
       <div class="text-center" v-if="(store.searchResult.length > 0) || (store.searchTradingInfoResult.length > 0)">
         <button @click="toggleControlPanel" v-if="store.openControlPanel" style="width: 50px" ><i class="fa-solid fa-chevron-up"></i></button>
         <button @click="toggleControlPanel" v-if="!store.openControlPanel" style="width: 50px" ><i class="fa-solid fa-chevron-down"></i></button>
@@ -262,7 +293,7 @@ const toggleControlPanel = function() {
     </div>
 
     <div v-if="store.openDetail">
-    <SearchDetail/>
+    <HouseDetail/>
     </div>
   </div>
   <!-- 좌측 조작화면 끝 -->

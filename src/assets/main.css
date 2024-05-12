@@ -92,15 +92,20 @@ h1 {
 .left-handle {
     z-index: 10;
     position: absolute;
+    top: 10%;
     min-width: 450px;
-    max-height: 85%;
+    max-width: 450px;
     padding: 20px;
     background-color: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.min-h-85 {
-    min-height: 85%;
+.max-h-85 {
+    max-height: 85%;
+}
+
+.max-h-36 {
+    max-height: 36%;
 }
 
 .left-handle-menu {
@@ -137,5 +142,65 @@ h1 {
 }
 
 #listContSection {
-    height: 52vh;
+    height: 48vh;
+}
+
+/************************/
+/******* 버튼 ************/
+/************************/
+.btn-close {
+    color: #2d2d2d;
+}
+
+/************************/
+/******** 토글 라디오 *****/
+/***********************/
+
+input:checked ~ .radio {
+    color: white;
+    background-color: rgb(59 130 246);
+}
+
+/***********************/
+/*** 정보 표시 박스 ******/
+/**********************/
+
+.info-box {
+    background-color: #fafafb;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 3px rgb(198 194 194 / 50%);
+}
+
+.info-box dl {
+    display: flex;
+    flex-wrap: wrap;
+}
+.info-box dt, dd {
+    margin: 0;
+    padding: 0.5rem;
+}
+.info-box dt {
+    text-align: left;
+    flex-basis: 75%;
+}
+.info-box dd {
+    text-align: right;
+    flex-basis: 25%;
+    box-sizing: border-box;
+}
+
+/*********************/
+/**** ag-grid *******/
+/*******************/
+.centered {
+    .ag-header-cell-label {
+        justify-content: center !important;
+    }
+}
+.ag-row {
+    .centered {
+        justify-content: center !important;
+        text-align: center;
+    }
 }
