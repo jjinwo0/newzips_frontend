@@ -15,6 +15,9 @@ const selectedSido = ref('')
 const selectedGugun = ref('')
 const selectedDong = ref('')
 
+// 검색 조건 라디오 변수
+const searchCondition = ref('searchByApartName');
+
 onMounted(() => {
   // 브라우저가 열리면 시도정보 얻기
   sendRequest(sido, "*00000000");
@@ -150,6 +153,7 @@ const gugunHandleChange = function() {
   }
 }
 
+// 컨트롤 패널 접기 열기
 const toggleControlPanel = function() {
   store.openControlPanel = !store.openControlPanel
 }
@@ -171,43 +175,56 @@ const toggleAnimation = computed(() => {
     <div class="left-handle" :style="toggleAnimation" :class="{'max-h-36':!store.openControlPanel}"
     style="display: flex; flex-direction: column; justify-content: space-between; transition: 0.6s; overflow: hidden;">
       <div>
-        <div class="left-handle-menu">
+        <div class="left-handle-menu flex justify-between">
           <ul>
             <li class="list-selected">아파트</li>
           </ul>
+
+            <div class="bg-gray-200 rounded-lg text-xs inline-block">
+              <div class="inline-flex rounded-lg">
+                <input type="radio" name="searchByApartName" id="searchByApartName" value="searchByApartName" checked hidden v-model="searchCondition" />
+                <label for="searchByApartName" class="radio text-center self-center py-2 px-4 rounded-lg cursor-pointer hover:opacity-75">아파트명 검색</label>
+              </div>
+              <div class="inline-flex rounded-lg">
+                <input type="radio" name="searchByDistrict" id="searchByDistrict" value="searchByDistrict" hidden v-model="searchCondition" />
+                <label for="searchByDistrict" class="radio text-center self-center py-2 px-4 rounded-lg cursor-pointer hover:opacity-75">지역 검색</label>
+              </div>
+            </div>
         </div>
 
-        <div class="flex input-cont">
+        <div class="flex input-cont"  v-show="searchCondition === 'searchByApartName' ">
           <input type="text" v-model="inputName" id="houseNameSearchForm" class="focus:outline-none flex-grow" style="flex-basis: 80%" placeholder="아파트명을 검색해보세요"/>
-          <button class="w-2/10 py-2.5 px-3 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" id="name-search-btn" @click="searchByName" style="width: 26%">
-            아파트 검색
+          <button class="w-2/10 py-2.5 px-3 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" id="name-search-btn" @click="searchByName">
+            검색
           </button>
         </div>
 
-        <div class="left-handle-selector">
-          <form id="houseSearchForm" style="display: flex; width: 100%; justify-content: space-around;">
-            <select class="custom-selector" id="sido" name="sido" v-model="selectedSido" @change="sidoHandleChange" ref="sido">
-              <option value="">시도 선택</option>
-            </select>
-            <select class="custom-selector" id="gugun" name="gugun" v-model="selectedGugun" @change="gugunHandleChange" ref="gugun">
-              <option value="">군구 선택</option>
-            </select>
-            <select class="custom-selector" id="dong" name="dong" v-model="selectedDong" ref="dong">
-              <option value="">읍면동 선택</option>
-            </select>
-          </form>
-        </div>
-        <!-- 시도/군구/읍면동 선택 끝 -->
+        <div v-show="searchCondition === 'searchByDistrict' ">
+          <div class="left-handle-selector">
+            <form id="houseSearchForm" style="display: flex; width: 100%; justify-content: space-around;">
+              <select class="custom-selector" id="sido" name="sido" v-model="selectedSido" @change="sidoHandleChange" ref="sido">
+                <option value="">시도 선택</option>
+              </select>
+              <select class="custom-selector" id="gugun" name="gugun" v-model="selectedGugun" @change="gugunHandleChange" ref="gugun">
+                <option value="">군구 선택</option>
+              </select>
+              <select class="custom-selector" id="dong" name="dong" v-model="selectedDong" ref="dong">
+                <option value="">읍면동 선택</option>
+              </select>
+            </form>
+          </div>
+          <!-- 시도/군구/읍면동 선택 끝 -->
 
-        <div class="mt-3">
-          <button @click="searchTradeInfoListByDistrict"
-            class="w-full py-2 me-2 mb-2 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-            id="list-btn"
-            type="button"
-          >
-            지역 거래 검색
-          </button>
-        </div>
+          <div class="mt-3">
+            <button @click="searchTradeInfoListByDistrict"
+              class="w-full py-2 me-2 mb-2 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+              id="list-btn"
+              type="button"
+            >
+              지역 거래 검색
+            </button>
+          </div>
+       </div>
 
         <!-- 아파트 정보 조회 결과 -->
         <div class="list-cont mt-5 overflow-y-auto mostly-customized-scrollbar" v-if="store.searchResult.length > 0 && store.openControlPanel">

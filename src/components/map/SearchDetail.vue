@@ -4,7 +4,9 @@ import { ref, onMounted } from 'vue';
 
 const store = useHouseStore()
 
+//  아파트 실거래가 정보
 const detail = ref(store.detailData);
+detail.value.reverse()
 
 const dealChartRef = ref(null)
 
