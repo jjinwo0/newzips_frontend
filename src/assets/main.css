@@ -159,3 +159,32 @@ input:checked ~ .radio {
     color: white;
     background-color: rgb(59 130 246);
 }
+
+/***********************/
+/*** 정보 표시 박스 ******/
+/**********************/
+
+.info-box {
+    background-color: #f8f8f8;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 3px rgb(198 194 194 / 50%);
+}
+
+.info-box dl {
+    display: flex;
+    flex-wrap: wrap;
+}
+.info-box dt, dd {
+    margin: 0;
+    padding: 0.5rem;
+}
+.info-box dt {
+    text-align: left;
+    flex-basis: 75%;
+}
+.info-box dd {
+    text-align: right;
+    flex-basis: 25%;
+    box-sizing: border-box;
+}

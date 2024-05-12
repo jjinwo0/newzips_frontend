@@ -2,7 +2,7 @@
 import axios from 'axios'
 import { useHouseStore } from '@/stores/house';
 import { ref, onMounted, computed } from 'vue'
-import SearchDetail from './SearchDetail.vue';
+import HouseDetail from './HouseDetail.vue';
 
 const inputName = ref('')
 const openDetail = ref(false)
@@ -293,7 +293,7 @@ const toggleAnimation = computed(() => {
     </div>
 
     <div v-if="store.openDetail">
-    <SearchDetail/>
+    <HouseDetail/>
     </div>
   </div>
   <!-- 좌측 조작화면 끝 -->

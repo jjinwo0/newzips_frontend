@@ -4,6 +4,8 @@ import router from '@/router'
 import axios from 'axios'
 
 const REST_HOUSE_API = `http://localhost:8080/house`
+// 카카오맵 api key
+const KAKAO_MAP_KEY = '892506882ffac8549eb7d9c813805c6e'
 
 // 이름으로 검색시 조회되는 내용
 const searchResult = ref([])
@@ -11,7 +13,6 @@ const searchResult = ref([])
 const searchTradingInfoResult = ref([])
 // 검색시 정보가 없으면 조회되는 내용이 없다교 표시하는 여부
 const isResultEmpty = ref(false)
-
 
 // 상세정보 창 조회했는지 여부
 const openDetail = ref(false)

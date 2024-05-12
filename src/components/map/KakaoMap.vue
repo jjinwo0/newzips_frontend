@@ -59,7 +59,7 @@ function initMap(latitude, longitude) {
       })
     }
     script.src =
-      '//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=892506882ffac8549eb7d9c813805c6e'
+      '//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey='+store.KAKAO_MAP_KEY
     document.head.appendChild(script)
   }
 }
