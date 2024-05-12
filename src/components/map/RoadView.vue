@@ -3,8 +3,8 @@ import { ref, onMounted } from 'vue'
 import { useHouseStore } from '@/stores/house'
 
 const props = defineProps({
-  lat : Number,
-  lng : Number
+  lat : [Number, String],
+  lng : [Number, String]
 })
 
 const store = useHouseStore()

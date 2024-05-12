@@ -2,6 +2,7 @@
 import { useHouseStore } from '@/stores/house';
 import { ref, onMounted } from 'vue';
 import RoadView from '@/components/map/RoadView.vue'
+import { AgGridVue } from 'ag-grid-vue3';
 
 const store = useHouseStore()
 
@@ -10,6 +11,16 @@ const detail = ref(store.detailData);
 detail.value.reverse()
 
 const dealChartRef = ref(null)
+
+const rowData = ref(detail.value);
+
+// Column Definitions: Defines the columns to be displayed.
+const colDefs = [
+  { field: 'dealDate', headerName: '거래일', flex: 4 },
+  { field: 'floor', headerName: '층', flex: 1 },
+  { field: 'exclusiveArea', headerName: '평', flex: 1 },
+  { field: 'dealAmount', headerName: '거래금액', flex: 3 }
+]
 
 onMounted( () => {
   console.log(detail)
@@ -40,8 +51,19 @@ onMounted( () => {
       }
     });
   }
-
 })
+
+const agGridDefaults = {
+  option: {
+    defaultColDef: { headerClass: "centered", cellClass: "centered" }, // 여기
+  },
+  gridApi: null
+}
+
+// ag-grid 데이터 컬럼의 넓이를 촘촘하게 하는 메서드
+const onReady = (params) => {
+  params.api.sizeColumnsToFit()
+}
 
 
 
@@ -76,6 +98,20 @@ onMounted( () => {
             <p class="text-base">실거래가 변동 추이 (만원) </p>
             <canvas ref="dealChartRef" width="400" height="400"></canvas>
           </div>
+
+          <div class="mt-6 custom-ag-grid" style="width: 390px">
+            <ag-grid-vue
+              :rowData="rowData"
+              :columnDefs="colDefs"
+              style="height: 500px"
+              class="ag-theme-quartz"
+              @grid-ready="onReady"
+              :grid-options="agGridDefaults.option"
+            >
+            </ag-grid-vue>
+          </div>
+
+
         </div>
     </div>
 </template>

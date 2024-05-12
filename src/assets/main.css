@@ -94,6 +94,7 @@ h1 {
     position: absolute;
     top: 10%;
     min-width: 450px;
+    max-width: 450px;
     padding: 20px;
     background-color: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -165,7 +166,7 @@ input:checked ~ .radio {
 /**********************/
 
 .info-box {
-    background-color: #f8f8f8;
+    background-color: #fafafb;
     padding: 5px 10px;
     border-radius: 5px;
     box-shadow: 2px 2px 3px rgb(198 194 194 / 50%);
@@ -187,4 +188,19 @@ input:checked ~ .radio {
     text-align: right;
     flex-basis: 25%;
     box-sizing: border-box;
+}
+
+/*********************/
+/**** ag-grid *******/
+/*******************/
+.centered {
+    .ag-header-cell-label {
+        justify-content: center !important;
+    }
+}
+.ag-row {
+    .centered {
+        justify-content: center !important;
+        text-align: center;
+    }
 }
