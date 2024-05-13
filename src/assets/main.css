@@ -193,6 +193,12 @@ input:checked ~ .radio {
 /*********************/
 /**** ag-grid *******/
 /*******************/
+.custom-ag-grid {
+    .ag-paging-row-summary-panel {
+        display: none;
+    }
+}
+
 .centered {
     .ag-header-cell-label {
         justify-content: center !important;
