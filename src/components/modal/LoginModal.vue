@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from 'vue'
+import { useMemberStore } from '@/stores/member';
+
+const store = useMemberStore()
 
 const props = defineProps({
   show: Boolean
@@ -19,24 +22,8 @@ const closeModal = () => {
 const handleLogin = () => {
   console.log('Login attempt with:', loginForm.value.username, loginForm.value.password)
 
-  fetch('http://localhost:8080/member/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-
-    body: JSON.stringify(loginForm.value)
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log('login success: ', data)
-      localStorage.setItem('loginMember', JSON.stringify(data))
-      closeModal() // 로그인 성공 후 모달 닫기
-      location.reload()
-    })
-    .catch((err) => {
-      console.error('Login failed: ', err)
-    })
+  store.login(loginForm.value.username, loginForm.value.password)
+  closeModal()
 }
 </script>
 

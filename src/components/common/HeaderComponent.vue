@@ -1,7 +1,10 @@
 <script setup>
-import { ref, defineEmits, onMounted } from 'vue'
+import { ref, defineEmits, computed } from 'vue'
+import { useMemberStore } from '@/stores/member';
 
-const userInfo = ref(null)
+const memberStore = useMemberStore()
+
+const loginMember = computed(() => memberStore.loginMember)
 
 const emit = defineEmits(['open-login-modal', 'open-join-modal'])
 
@@ -14,30 +17,10 @@ const openJoinModal = () => {
 }
 
 const logout = () => {
-  const id = userInfo.value.username
-
-  fetch(`http://localhost:8080/member/logout`, {
-    method: 'POST'
-  })
-    .then((res) => {
-      if (res.ok) {
-        localStorage.removeItem('loginMember')
-        userInfo.value = null
-        location.reload()
-      } else {
-        throw new Error('Logout Failed')
-      }
-    })
-    .catch((err) => {
-      console.err('Logout Error: ', err)
-    })
+  
+  memberStore.logout()
+  loginMember.value = null;
 }
-
-onMounted(() => {
-  const loginMember = localStorage.getItem('loginMember')
-
-  if (loginMember) userInfo.value = JSON.parse(loginMember)
-})
 </script>
 
 <template>
@@ -49,13 +32,13 @@ onMounted(() => {
       </div>
 
       <div style="display: flex">
-        <template v-if="!userInfo">
+        <template v-if="loginMember === null">
           <button type="button" style="padding: 10px 15px" @click="openLoginModal">로그인</button>
           <button type="button" style="padding: 10px 15px" @click="openJoinModal">회원가입</button>
         </template>
 
         <template v-else>
-          <div style="padding: 10px 15px;">안녕하세요 <span class="font-bold">{{ userInfo.username }}</span> 님</div>
+          <div style="padding: 10px 15px;">안녕하세요 <span class="font-bold">{{ loginMember }}</span> 님</div>
           <a href="#" @click="logout">로그아웃</a>
         </template>
 
