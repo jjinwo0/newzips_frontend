@@ -13,10 +13,13 @@ var geocoder = null;
 
 // 행정동 주소를 담는 객체
 var address = ref({
-  sido : '',
-  gugun : '',
-  dong : ''
+  sidoName : '',
+  gugunName : '',
+  dongName : ''
 })
+
+// 마커 정보를 담는 객체
+let makers = ref([]);
 
 onMounted(() => {
   fetchUserLocation()
@@ -64,9 +67,30 @@ function getApartMentInfoByDongName(result, status) {
       // 행정동의 region_type 값은 'H' 이므로
       if (result[i].region_type === 'H') {
         let addressName = result[i].address_name;
-        [address.value.sido, address.value.gugun, address.value.dong] = addressName.split(' ');
+        [address.value.sidoName, address.value.gugunName, address.value.dongName] = addressName.split(' ');
 
-        
+        axios.get(`${store.REST_HOUSE_API}/list/apart`, {
+          params: address.value
+        })
+          .then((response) => {
+            console.log(response)
+            console.log("=====================" + response.data)
+            makers.value = [];
+
+            for(var markerInfo of response.data) {
+              makers.value.push({
+                title : markerInfo.apartmentName,
+                nowLat : markerInfo.lat,
+                nowLng : markerInfo.lng
+              })
+            }
+
+
+
+          })
+          .catch((error) => {
+            console.log(error)
+          })
 
         break;
       }
@@ -89,7 +113,7 @@ function getApartMentInfoByDongName(result, status) {
 
 
   <KakaoMap :lat="store.nowLat" :lng="store.nowLng" :draggable="true" style="height: 100vh; width: 100%" @onLoadKakaoMap="onLoadKakaoMap">
-    <KakaoMapMarker :lat="store.nowLat" :lng="store.nowLng"></KakaoMapMarker>
+    <KakaoMapMarker v-for="maker in makers" :lat="maker.nowLat" :lng="maker.nowLng"></KakaoMapMarker>
     <ControlPanel />
   </KakaoMap>
 
