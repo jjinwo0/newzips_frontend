@@ -34,9 +34,12 @@ const openControlPanel = ref(false)
 
 export const useHouseStore = defineStore('house', () => {
 
+  // 아파트 이름으로 검색
   const searchByName = (name) => {
+    // 검색 내역 초기화
     searchResult.value = ''
     searchTradingInfoResult.value = ''
+
     axios.get(`http://localhost:8080/house/list/name/${name}`)
       .then((res) => {
         searchResult.value = res.data
@@ -59,6 +62,7 @@ export const useHouseStore = defineStore('house', () => {
       })
   }
 
+  // 상세 정보
   const showDetails = (aptCode) => {
     axios
       .get(`http://localhost:8080/house/detail/${aptCode}`)
@@ -73,7 +77,9 @@ export const useHouseStore = defineStore('house', () => {
       })
   }
 
+  // 지역으로 거래내역 조회
   const searchTradeInfoListByDistrict = (selectedDong) => {
+    // 검색 내역 초기화
     searchResult.value = ''
     searchTradingInfoResult.value = ''
 
