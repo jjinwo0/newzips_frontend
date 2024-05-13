@@ -1,6 +1,6 @@
 <script setup>
 import HeaderComponent from '@/components/common/HeaderComponent.vue'
-import KakaoMap from '@/components/map/KakaoMap.vue'
+import MapWrap from '@/components/map/MapWrap.vue'
 import LoginModal from '@/components/modal/LoginModal.vue'
 import JoinModal from '@/components/modal/JoinModal.vue'
 import { ref } from 'vue'
@@ -44,7 +44,7 @@ const closeJoinModal = () => {
     </div>
 
     <div class="kakao-map-container">
-      <KakaoMap />
+      <MapWrap />
     </div>
   </main>
 </template>

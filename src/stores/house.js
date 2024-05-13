@@ -34,10 +34,13 @@ const openControlPanel = ref(false)
 
 export const useHouseStore = defineStore('house', () => {
 
+  // 아파트 이름으로 검색
   const searchByName = (name) => {
+    // 검색 내역 초기화
     searchResult.value = ''
     searchTradingInfoResult.value = ''
-    axios.get(`http://localhost:8080/house/list/name/${name}`)
+
+    axios.get(`${REST_HOUSE_API}/list/name/${name}`)
       .then((res) => {
         searchResult.value = res.data
         if(searchResult.value.length < 1) {
@@ -59,9 +62,10 @@ export const useHouseStore = defineStore('house', () => {
       })
   }
 
+  // 상세 정보
   const showDetails = (aptCode) => {
     axios
-      .get(`http://localhost:8080/house/detail/${aptCode}`)
+      .get(`${REST_HOUSE_API}/detail/${aptCode}`)
       .then((res) => {
         openDetail.value = true;
         detailData.value = res.data;
@@ -73,7 +77,9 @@ export const useHouseStore = defineStore('house', () => {
       })
   }
 
+  // 지역으로 거래내역 조회
   const searchTradeInfoListByDistrict = (selectedDong) => {
+    // 검색 내역 초기화
     searchResult.value = ''
     searchTradingInfoResult.value = ''
 
@@ -81,7 +87,7 @@ export const useHouseStore = defineStore('house', () => {
       isResultEmpty.value = true;
     }
 
-    axios.get(`http://localhost:8080/house/list/code/${selectedDong}`)
+    axios.get(`${REST_HOUSE_API}/list/code/${selectedDong}`)
     .then((res) => {
       searchTradingInfoResult.value = res.data
       if(searchTradingInfoResult.value.length < 1) {
