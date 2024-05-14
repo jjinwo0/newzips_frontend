@@ -17,9 +17,14 @@ const openJoinModal = () => {
 }
 
 const logout = () => {
+
+  const confirm = window.confirm('로그아웃 하시겠습니까?');
   
-  memberStore.logout()
-  loginMember.value = null;
+
+  if(confirm){
+    memberStore.logout()
+    loginMember.value = null;
+  }
 }
 </script>
 
