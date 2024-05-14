@@ -55,6 +55,18 @@ export const useMemberStore = defineStore('member', () => {
     })
 
   }
+  
+
+  const initializeAuthState = () => {
+    const tokenDto = Cookies.get('tokenDto');
+    if (tokenDto) {
+      const token = JSON.parse(tokenDto);
+      if (token && token.username) {
+        loginMember.value = token.username;
+        // 필요하다면 여기서 추가적인 사용자 정보를 로드하는 로직을 구현할 수 있습니다.
+      }
+    }
+  }
 
   // Axios 인터셉터 설정
   axios.interceptors.request.use(async (config) => {
@@ -109,5 +121,5 @@ export const useMemberStore = defineStore('member', () => {
     return Promise.reject(error)
   })
 
-  return { login, logout, loginMember }
+  return { login, logout, loginMember, initializeAuthState }
 })
