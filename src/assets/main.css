@@ -210,3 +210,34 @@ input:checked ~ .radio {
         text-align: center;
     }
 }
+
+/********************/
+/****** map *********/
+/********************/
+.house-info-overlay {
+    padding: 5px;
+    background-color: #3b82f6;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 120px;
+}
+
+.house-info-overlay .apart-amount {
+    font-weight: bold;
+    margin-bottom: 5px;
+    background-color: #3b82f6;
+    color: white;
+    margin: 0 auto
+}
+
+.house-info-overlay .apart-name {
+    display: flex;
+    background-color: #fff;
+    padding: 3px;
+    border-radius: 3px;
+    width: 100%;
+    font-size: 12px
+}

@@ -3,7 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import axios from 'axios'
 import ControlPanel from '@/components/map/ControlPanel.vue'
 import { useHouseStore } from '@/stores/house'
-import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
+import { KakaoMap, KakaoMapCustomOverlay  } from 'vue3-kakao-maps';
 
 const store = useHouseStore()
 const map = ref(null)
@@ -78,10 +78,12 @@ function getApartMentInfoByDongName(result, status) {
             makers.value = [];
 
             for(var markerInfo of response.data) {
+              console.log(markerInfo)
               makers.value.push({
-                title : markerInfo.apartmentName,
+                dealAmount : markerInfo.dealAmount,
                 nowLat : markerInfo.lat,
-                nowLng : markerInfo.lng
+                nowLng : markerInfo.lng,
+                apartmentName: markerInfo.apartmentName
               })
             }
 
@@ -98,14 +100,26 @@ function getApartMentInfoByDongName(result, status) {
   }
 }
 
+const shortenWords = (str, length = 8) => {
+  let result = '';
+  if(str.length > length) {
+    result = str.slice(0, length-3) + '...';
+  }
+  else {
+    result = str;
+  }
+  return result
+}
 
-
-// 중심 좌표나 확대 수준이 변경됐을 때 지도 중심 좌표에 대한 주소 정보를 표시하도록 이벤트를 등록합니다
-// kakao.maps.event.addListener(map, 'idle', function() {
-//   console.log('dd')
-//   //searchAddrFromCoords(map.getCenter(), displayCenterInfo);
-// });
-
+const content = (dealAmount, apartmentName) =>{
+  let html = ` <div class="house-info-overlay"
+      >
+        <div class="apart-amount">${dealAmount}억</div>
+        <p class="apart-name" style="">`
+          + shortenWords(apartmentName, 10) +
+        `</p></div>`;
+  return html;
+}
 
 </script>
 
@@ -113,7 +127,12 @@ function getApartMentInfoByDongName(result, status) {
 
 
   <KakaoMap :lat="store.nowLat" :lng="store.nowLng" :draggable="true" style="height: 100vh; width: 100%" @onLoadKakaoMap="onLoadKakaoMap">
-    <KakaoMapMarker v-for="maker in makers" :lat="maker.nowLat" :lng="maker.nowLng"></KakaoMapMarker>
+    <template v-for="maker in makers">
+      <KakaoMapCustomOverlay  :lat="maker.nowLat" :lng="maker.nowLng" :content="content(maker.dealAmount, maker.apartmentName)">
+
+      </KakaoMapCustomOverlay>
+    </template>
+
     <ControlPanel />
   </KakaoMap>
 
