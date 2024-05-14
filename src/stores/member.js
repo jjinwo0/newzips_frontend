@@ -29,7 +29,7 @@ export const useMemberStore = defineStore('member', () => {
       router.push('/')
     })
     .catch((err) => {
-      console.error("로그인 에러 발생 :: ", err);
+      console.error("로그인 에러 발생 :: ", err.response.data);
     })
   }
 
@@ -51,7 +51,7 @@ export const useMemberStore = defineStore('member', () => {
       router.push('/')
     })
     .catch((err) => {
-      console.error("로그아웃 에러 발생 :: ", err)
+      console.error("로그아웃 에러 발생 :: ", err.response.data)
     })
 
   }
@@ -63,7 +63,6 @@ export const useMemberStore = defineStore('member', () => {
       const token = JSON.parse(tokenDto);
       if (token && token.username) {
         loginMember.value = token.username;
-        // 필요하다면 여기서 추가적인 사용자 정보를 로드하는 로직을 구현할 수 있습니다.
       }
     }
   }
