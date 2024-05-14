@@ -10,11 +10,16 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 
 import './assets/main.css';
 
+import { useMemberStore } from './stores/member'
+
 const pinia = createPinia()
 const app = createApp(App)
 
 useKakao('892506882ffac8549eb7d9c813805c6e', ['services']);
 app.use(pinia)
 app.use(router)
+
+const memberStore = useMemberStore()
+memberStore.initializeAuthState()
 
 app.mount('#app')

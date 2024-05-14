@@ -29,7 +29,7 @@ export const useMemberStore = defineStore('member', () => {
       router.push('/')
     })
     .catch((err) => {
-      console.error("로그인 에러 발생 :: ", err);
+      console.error("로그인 에러 발생 :: ", err.response.data);
     })
   }
 
@@ -51,9 +51,20 @@ export const useMemberStore = defineStore('member', () => {
       router.push('/')
     })
     .catch((err) => {
-      console.error("로그아웃 에러 발생 :: ", err)
+      console.error("로그아웃 에러 발생 :: ", err.response.data)
     })
 
+  }
+  
+
+  const initializeAuthState = () => {
+    const tokenDto = Cookies.get('tokenDto');
+    if (tokenDto) {
+      const token = JSON.parse(tokenDto);
+      if (token && token.username) {
+        loginMember.value = token.username;
+      }
+    }
   }
 
   // Axios 인터셉터 설정
@@ -109,5 +120,5 @@ export const useMemberStore = defineStore('member', () => {
     return Promise.reject(error)
   })
 
-  return { login, logout, loginMember }
+  return { login, logout, loginMember, initializeAuthState }
 })
