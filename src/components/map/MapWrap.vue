@@ -73,17 +73,15 @@ function getApartMentInfoByDongName(result, status) {
           params: address.value
         })
           .then((response) => {
-            console.log(response)
-            console.log("=====================" + response.data)
             makers.value = [];
 
-            for(var markerInfo of response.data) {
-              console.log(markerInfo)
+            for(var makerInfo of response.data) {
               makers.value.push({
-                dealAmount : markerInfo.dealAmount,
-                nowLat : markerInfo.lat,
-                nowLng : markerInfo.lng,
-                apartmentName: markerInfo.apartmentName
+                aptCode : makerInfo.aptCode,
+                dealAmount : makerInfo.dealAmount,
+                nowLat : makerInfo.lat,
+                nowLng : makerInfo.lng,
+                apartmentName: makerInfo.apartmentName
               })
             }
 
@@ -111,15 +109,27 @@ const shortenWords = (str, length = 8) => {
   return result
 }
 
-const content = (dealAmount, apartmentName) =>{
-  let html = ` <div class="house-info-overlay"
-      >
+// 커스텀 오버레이 설정
+const content = (aptCode, dealAmount, apartmentName) =>{
+  let html = `<div class="house-info-overlay" onclick="showDetails(${aptCode})">
         <div class="apart-amount">${dealAmount}억</div>
         <p class="apart-name" style="">`
           + shortenWords(apartmentName, 10) +
         `</p></div>`;
   return html;
 }
+
+// 해당 아파트에 대한 상세 정보를 보여주는 전역 메서드
+window.showDetails = function(aptCode) {
+  showDetails(aptCode)
+}
+
+// 아파트상세 정보 조회 뷰 메서드
+const showDetails = (aptCode) => {
+  store.showDetails(aptCode)
+}
+
+
 
 </script>
 
@@ -128,7 +138,7 @@ const content = (dealAmount, apartmentName) =>{
 
   <KakaoMap :lat="store.nowLat" :lng="store.nowLng" :draggable="true" style="height: 100vh; width: 100%" @onLoadKakaoMap="onLoadKakaoMap">
     <template v-for="maker in makers">
-      <KakaoMapCustomOverlay  :lat="maker.nowLat" :lng="maker.nowLng" :content="content(maker.dealAmount, maker.apartmentName)">
+      <KakaoMapCustomOverlay  :lat="maker.nowLat" :lng="maker.nowLng" :content="content(maker.aptCode, maker.dealAmount, maker.apartmentName)">
 
       </KakaoMapCustomOverlay>
     </template>

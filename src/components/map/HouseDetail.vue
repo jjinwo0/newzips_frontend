@@ -1,19 +1,22 @@
 <script setup>
 import { useHouseStore } from '@/stores/house';
-import { ref, onMounted } from 'vue';
-import axios from 'axios'
+import { ref, onMounted, watch, computed } from 'vue';
 import RoadView from '@/components/map/RoadView.vue'
 import { AgGridVue } from 'ag-grid-vue3';
 
 const store = useHouseStore()
 
 //  아파트 실거래가 정보
-const detailOrg = ref(store.detailData);
-const detail = [...detailOrg.value].reverse()
+const detailOrg = computed(() => store.detailData);
+// const detail = [...detailOrg.value].reverse()
+const detail = computed(() => {
+  return [...detailOrg.value].reverse();
+});
 
 const dealChartRef = ref(null)
+const chartInstance = ref(null)
 
-const rowData = ref(detailOrg.value);
+const rowData = computed(() => detailOrg.value);
 
 // Column Definitions: Defines the columns to be displayed.
 const colDefs = [
@@ -23,21 +26,31 @@ const colDefs = [
   { field: 'dealAmount', headerName: '거래금액', flex: 2 }
 ]
 
-onMounted( () => {
-  console.log(detail)
+watch( ()=> detailOrg, (newValue, oldValue) => {
+  loadDetailData()
+
+}, {deep:true})
+
+const loadDetailData = () => {
   if(dealChartRef.value) {
     const ctx = dealChartRef.value.getContext('2d');
-    dealChartRef.value = new Chart(ctx, {
+
+    // 기존 차트가 존재하는 경우 제거
+    if (chartInstance.value) {
+      chartInstance.value.destroy();
+    }
+
+    chartInstance.value = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: detail.map(item => {
+        labels: detail.value.map(item => {
           const year = item.dealYear; // 년도 추출
           const monthDay = item.dealMonth + '/' + item.dealDay; // 월/일 형식으로 변환
           return year + '/' + monthDay; // 라벨 형식: dealYear/dealDate
         }),
         datasets: [{
           label: '거래 금액',
-          data: detail.map(item => parseFloat(item.dealAmount.replace(/,/g, ''))),
+          data: detail.value.map(item => parseFloat(item.dealAmount.replace(/,/g, ''))),
           fill: false,
           borderColor: 'rgb(75, 192, 192)',
           tension: 0.1
@@ -52,7 +65,11 @@ onMounted( () => {
       }
     });
   }
+}
 
+onMounted( () => {
+
+  loadDetailData()
 
 })
 

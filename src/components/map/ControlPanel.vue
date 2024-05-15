@@ -45,6 +45,7 @@ const searchTradeInfoListByDistrict = function() {
   store.searchTradeInfoListByDistrict(selectedDong.value)
 }
 
+// 해당 아파트에 대한 상세 정보를 보여준다.
 const showDetails = (aptCode) => {
   store.showDetails(aptCode)
 }

@@ -17,6 +17,9 @@ const isResultEmpty = ref(false)
 // 상세정보 창 조회했는지 여부
 const openDetail = ref(false)
 
+// 상세 정보 데이터 갱신 여부
+const loadDetailData = ref(false)
+
 // 상세정보 창에 표시되는 내용
 const detailData = ref([])
 
@@ -62,13 +65,14 @@ export const useHouseStore = defineStore('house', () => {
       })
   }
 
-  // 상세 정보
+  // 아파트 상세 정보 조회
   const showDetails = (aptCode) => {
     axios
       .get(`${REST_HOUSE_API}/detail/${aptCode}`)
       .then((res) => {
         openDetail.value = true;
         detailData.value = res.data;
+        console.log('데이터 갱신 : ' + detailData.value )
         nowLat.value = res.data[0].lat;
         nowLng.value = res.data[0].lng;
       })
