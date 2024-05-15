@@ -72,7 +72,6 @@ export const useHouseStore = defineStore('house', () => {
       .then((res) => {
         openDetail.value = true;
         detailData.value = res.data;
-        console.log('데이터 갱신 : ' + detailData.value )
         nowLat.value = res.data[0].lat;
         nowLng.value = res.data[0].lng;
       })
