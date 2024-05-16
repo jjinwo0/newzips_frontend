@@ -10,6 +10,8 @@ const apiKey = import.meta.env.VITE_ENV_KAKAO_API_KEY
 
 const loginMember = ref(null)
 
+const profile = ref(null)
+
 export const useMemberStore = defineStore('member', () => {
 
   // 로그인 함수
@@ -27,6 +29,8 @@ export const useMemberStore = defineStore('member', () => {
       Cookies.set('tokenDto', tokenDto)
 
       loginMember.value = res.data.nickname;
+
+      profile.value = res.data.profile
 
       router.push('/')
     })
@@ -88,6 +92,8 @@ export const useMemberStore = defineStore('member', () => {
 
         loginMember.value = res.data.nickname;
 
+        profile.value = res.data.profile;
+
         router.push('/')
       })
       .catch((err) => {
@@ -102,6 +108,7 @@ export const useMemberStore = defineStore('member', () => {
       const token = JSON.parse(tokenDto);
       if (token && token.username) {
         loginMember.value = token.nickname;
+        profile.value =token.profile;
       }
     }
   }
@@ -160,5 +167,5 @@ export const useMemberStore = defineStore('member', () => {
     return Promise.reject(error)
   })
 
-  return { login, logout, loginMember, initializeAuthState, kakaoLogin, apiKey, kakaoLoginRedirect }
+  return { login, logout, loginMember, initializeAuthState, kakaoLogin, apiKey, kakaoLoginRedirect, profile }
 })
