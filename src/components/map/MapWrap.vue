@@ -5,6 +5,8 @@ import ControlPanel from '@/components/map/ControlPanel.vue'
 import { useHouseStore } from '@/stores/house'
 import { KakaoMap, KakaoMapCustomOverlay  } from 'vue3-kakao-maps';
 
+const { VITE_REST_STORE_API } = import.meta.env;
+
 const store = useHouseStore()
 const map = ref(null)
 
@@ -20,6 +22,10 @@ var address = ref({
 
 // 마커 정보를 담는 객체
 let makers = ref([]);
+// 상점 마커 정보를 담는 객체
+let storeMakers = ref([]);
+
+
 
 onMounted(() => {
   fetchUserLocation()
@@ -69,24 +75,46 @@ function getApartMentInfoByDongName(result, status) {
         let addressName = result[i].address_name;
         [address.value.sidoName, address.value.gugunName, address.value.dongName] = addressName.split(' ');
 
+        console.log(addressName)
+
+        // 법정동 주소에 기반하여 아파트 정보 가져오기
         axios.get(`${store.REST_HOUSE_API}/list/apart`, {
           params: address.value
         })
-          .then((response) => {
-            makers.value = [];
+        .then((response) => {
+          makers.value = [];
 
+          for(var makerInfo of response.data) {
+            makers.value.push({
+              aptCode : makerInfo.aptCode,
+              dealAmount : makerInfo.dealAmount,
+              nowLat : makerInfo.lat,
+              nowLng : makerInfo.lng,
+              apartmentName: makerInfo.apartmentName
+            })
+          }
+          console.log('아파트 정보 ' + makers.value)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+        //법정동 주소 및 업종 타입에 기반하여 상권정보 가져오기
+        axios.get(`${VITE_REST_STORE_API}/list`,{
+          params: address.value
+        })
+          .then((response) => {
             for(var makerInfo of response.data) {
-              makers.value.push({
-                aptCode : makerInfo.aptCode,
-                dealAmount : makerInfo.dealAmount,
-                nowLat : makerInfo.lat,
-                nowLng : makerInfo.lng,
-                apartmentName: makerInfo.apartmentName
+              storeMakers.value.push({
+                storeCode : makerInfo.storeCode,
+                storeName : makerInfo.storeName,
+                storeTypeName : makerInfo.storeTypeName,
+                doro : makerInfo.doro,
+                lat : makerInfo.lat,
+                lng : makerInfo.lng
               })
             }
 
-
-
+            console.log('상권 정보 === ' + storeMakers.value)
           })
           .catch((error) => {
             console.log(error)
