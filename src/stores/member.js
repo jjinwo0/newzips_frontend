@@ -6,6 +6,8 @@ import { ref } from 'vue'
 
 const REST_MEMBER_API = `http://localhost:8080/member`
 
+const apiKey = import.meta.env.VITE_ENV_KAKAO_API_KEY
+
 const loginMember = ref(null)
 
 export const useMemberStore = defineStore('member', () => {
@@ -24,7 +26,7 @@ export const useMemberStore = defineStore('member', () => {
 
       Cookies.set('tokenDto', tokenDto)
 
-      loginMember.value = res.data.username;
+      loginMember.value = res.data.nickname;
 
       router.push('/')
     })
@@ -55,17 +57,55 @@ export const useMemberStore = defineStore('member', () => {
     })
 
   }
+
+  const kakaoLogin = () => {
+
+    location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${apiKey}&redirect_uri=http://localhost:8080/oauth/kakao/callback&response_type=code`
+  }
   
+  const kakaoLoginRedirect = () => {
+
+    const params = new URLSearchParams(window.location.search);
+
+    const accessToken = params.get('accessToken')
+    const refreshToken = params.get('refreshToken')
+
+    if (accessToken && refreshToken){
+
+      axios.post(`${REST_MEMBER_API}/oauth/kakao/login`, { memberType: 'KAKAO' },{
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      .then((res) => {
+        console.log(res.data)
+
+        const tokenDto = JSON.stringify(res.data)
+
+        console.log(tokenDto)
+
+        Cookies.set('tokenDto', tokenDto)
+
+        loginMember.value = res.data.nickname;
+
+        router.push('/')
+      })
+      .catch((err) => {
+        console.error("카카오 로그인 에러 :: ", err)
+      })
+    }
+  }
 
   const initializeAuthState = () => {
     const tokenDto = Cookies.get('tokenDto');
     if (tokenDto) {
       const token = JSON.parse(tokenDto);
       if (token && token.username) {
-        loginMember.value = token.username;
+        loginMember.value = token.nickname;
       }
     }
   }
+
 
   // Axios 인터셉터 설정
   axios.interceptors.request.use(async (config) => {
@@ -103,7 +143,7 @@ export const useMemberStore = defineStore('member', () => {
 
             accessToken = res.data.accessToken;
             Cookies.set('accessToken', accessToken, { expires: res.data.accessTokenExpireTime })
-            config.headers.Authorization = `Bearer $`
+            config.headers.Authorization = `Bearer ${accessToken}`
 
           } catch(err) {
             console.error("액세스 토큰 재발급 에러 :: ", err)
@@ -120,5 +160,5 @@ export const useMemberStore = defineStore('member', () => {
     return Promise.reject(error)
   })
 
-  return { login, logout, loginMember, initializeAuthState }
+  return { login, logout, loginMember, initializeAuthState, kakaoLogin, apiKey, kakaoLoginRedirect }
 })
