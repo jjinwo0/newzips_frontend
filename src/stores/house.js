@@ -23,6 +23,9 @@ const loadDetailData = ref(false)
 // 상세정보 창에 표시되는 내용
 const detailData = ref([])
 
+// 선택한 옵션 목록
+const selectedOptions = ref([])
+
 // 상세정보 창 닫기
 const closeOpenDetail = () => {
   openDetail.value = !openDetail.value
@@ -114,6 +117,6 @@ export const useHouseStore = defineStore('house', () => {
   return {
     REST_HOUSE_API, searchResult, searchByName, showDetails, openDetail,
     detailData, nowLat, nowLng, searchTradeInfoListByDistrict, searchTradingInfoResult,
-    isResultEmpty, openControlPanel,closeOpenDetail
+    isResultEmpty, selectedOptions, openControlPanel,closeOpenDetail
   }
 })

@@ -27,13 +27,19 @@ const colDefs = [
   { field: 'dealAmount', headerName: '거래금액', flex: 2 }
 ]
 
+
+onMounted( async () => {
+  loadDetailData()
+})
+
 watch( ()=> detailOrg, async (newValue, oldValue) => {
   await nextTick();
-  console.log('DOM updated.');
 
-  console.log('Chart data changed:');
+  // 차트 애니메이션이 진행중이지 않다면 바로 데이터를 가져온다.
   if (!isAnimating) {
     await loadDetailData();
+
+  // 차트 애니메이션이 진행중이라면 기달렸다가 데이터를 가져온다.
   } else {
     console.log('Chart is animating, waiting for completion...');
     const interval = setInterval(() => {
@@ -46,20 +52,12 @@ watch( ()=> detailOrg, async (newValue, oldValue) => {
 
 }, {deep:true})
 
-const fetchData = async () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(store.detailData);
-    }, 1000)
-  })
-}
-
 const loadDetailData = async () => {
   if(dealChartRef.value) {
       chartRendering()
   }
   else {
-    console.warn('dealChartRef is null');
+    //console.warn('dealChartRef is null');
   }
 }
 
@@ -104,20 +102,6 @@ const chartRendering = async function() {
   });
   console.log(chartInstance.value)
 }
-
-onMounted( async () => {
-  loadDetailData()
-
-})
-
-onUpdated(() => {
-
-
-
-});
-
-
-
 
 const agGridDefaults = {
   option: {

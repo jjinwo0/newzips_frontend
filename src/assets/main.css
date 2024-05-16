@@ -145,11 +145,53 @@ h1 {
     height: 48vh;
 }
 
+.store-option-panel {
+    z-index: 10;
+    position: absolute;
+    right: 2%;
+    top: 10%;
+    min-width: 90px;
+    max-width: 90px;
+    padding: 20px;
+
+}
+
+.store-option {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 170px;
+}
+
 /************************/
 /******* 버튼 ************/
 /************************/
 .btn-close {
     color: #2d2d2d;
+}
+
+.btn-option-select {
+    width: 50px;
+    height: 50px;
+    font-size: 25px;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.btn-food-option-selected {
+    background-color: #ffac3f;
+    color: white;
+}
+
+.btn-pencil-option-selected {
+    background-color: #2cb10e;
+    color: white;
+}
+
+.btn-gym-option-selected {
+    background-color: #ff3fbc;
+    color: white;
 }
 
 /************************/
