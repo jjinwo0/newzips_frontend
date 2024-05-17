@@ -12,17 +12,21 @@ export default {
     });
   },
 
-  subscribe(topic, callback) {
-    stompClient.subscribe(topic, message => {
+  subscribe(roomId, callback) {
+    stompClient.subscribe(`/sub/room/${roomId}`, message => {
       callback(JSON.parse(message.body));
     });
   },
 
-  sendMessage(message) {
-    stompClient.send('/app/chat.sendMessage', JSON.stringify(message), {});
+  sendMessage(roomId, message) {
+    stompClient.send(`/app/room/${roomId}`, JSON.stringify(message), {});
   },
 
-  addUser(user) {
-    stompClient.send('/app/chat.addUser', JSON.stringify(user), {});
+  addUser(roomId, chat) {
+    const chatMessage = {
+      sender: chat.sender,
+      message: `${chat.sender}님이 입장하셨습니다.` // 입장 메시지 예시
+    };
+    stompClient.send(`/app/room/${roomId}/entered`, JSON.stringify(chatMessage), {});
   }
 }
