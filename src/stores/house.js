@@ -26,10 +26,16 @@ const detailData = ref([])
 // 선택한 옵션 목록
 const selectedOptions = ref([])
 
+// 옵션 변수 목록 (음식, 교육, 예술/스포츠)
+const foodCode = 'I2';
+const educationCode = 'P1';
+const sportsCode = 'R1';
+
 // 상세정보 창 닫기
 const closeOpenDetail = () => {
   openDetail.value = !openDetail.value
 }
+
 
 // 위도 경도
 const nowLat = ref('')
@@ -117,6 +123,6 @@ export const useHouseStore = defineStore('house', () => {
   return {
     REST_HOUSE_API, searchResult, searchByName, showDetails, openDetail,
     detailData, nowLat, nowLng, searchTradeInfoListByDistrict, searchTradingInfoResult,
-    isResultEmpty, selectedOptions, openControlPanel,closeOpenDetail
+    isResultEmpty, selectedOptions, openControlPanel,closeOpenDetail, foodCode, educationCode, sportsCode
   }
 })

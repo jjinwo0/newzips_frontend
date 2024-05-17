@@ -9,23 +9,21 @@ const foodSelected = ref(false)
 const pencilSelected = ref(false)
 const gymSelected = ref(false)
 
-const foodCode = 'I2';
-const educationCode = 'P1';
-const sportsCode = 'R1';
+
 
 const toggleFoodSelected = () => {
   foodSelected.value = !foodSelected.value
-  pushOptionCode(foodSelected.value, foodCode)
+  pushOptionCode(foodSelected.value, store.foodCode)
 }
 
 const togglePencilSelected = () => {
   pencilSelected.value = !pencilSelected.value
-  pushOptionCode(pencilSelected.value, educationCode)
+  pushOptionCode(pencilSelected.value, store.educationCode)
 }
 
 const toggleGymSelected = () => {
   gymSelected.value = !gymSelected.value
-  pushOptionCode(gymSelected.value, sportsCode)
+  pushOptionCode(gymSelected.value, store.sportsCode)
 }
 
 // 선택 여부에 따른 옵션 코드 추가 함수

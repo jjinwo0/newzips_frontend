@@ -283,3 +283,38 @@ input:checked ~ .radio {
     width: 100%;
     font-size: 12px
 }
+
+.food-info-overlay {
+    background-color: #ffac3f;
+}
+
+.education-info-overlay {
+    background-color: #2cb10e;
+}
+
+.sports-info-overlay {
+    background-color: #ff3fbc;
+}
+
+.option-overlay-title {
+    color: white;
+}
+
+.option-overlay-hover {
+    z-index: 99;
+    border-radius: 5px;
+    font-size: 14px;
+    position: absolute;
+    left: 50px;
+    top: -30px;
+    width: 200px;
+    height: 100px;
+    background-color: white;
+    border: 1px solid #c9c9c9;
+    padding: 10px;
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.01);
+}
+
+.option-overlay-hover p {
+    white-space: pre-wrap;
+}
