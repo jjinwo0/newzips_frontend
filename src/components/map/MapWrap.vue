@@ -16,6 +16,9 @@ const addressName = ref('');
 // 카카오맵 주소-좌표 변환 객체
 var geocoder = null;
 
+// 카카오맵 레벨
+const mapLevel = ref('')
+
 // 행정동 주소를 담는 객체
 var address = ref({
   sidoName : '',
@@ -55,15 +58,30 @@ async function fetchUserLocation() {
 
 }
 
+// 높이 10 이상은 시도
+// 높이 9~7 부터 시군구
+// 높이 6~4 부터 동 ->  일정 갯수
+// 높이 4~1 부터 건물
 const onLoadKakaoMap = (mapRef) => {
 
   // 주소-좌표 변환 객체를 생성합니다
   geocoder = new kakao.maps.services.Geocoder();
 
   map.value = mapRef;
+  map.value.setMinLevel(1) // 맵 최저 level 지점
+  map.value.setMaxLevel(11) // 맵 최고 lebel 지점
+
   kakao.maps.event.addListener(map.value, 'idle', function() {
     searchAddrFromCoords(map.value.getCenter(), getApartMentInfoByDongName);
   })
+
+  kakao.maps.event.addListener(map.value, 'zoom_changed', function() {
+    if(map.value) {
+      mapLevel.value = map.value.getLevel();
+      console.log('레벨 : ' + mapLevel.value)
+    }
+  });
+
 
 };
 
@@ -224,11 +242,18 @@ const showDetails = (aptCode) => {
 
   <KakaoMap :lat="store.nowLat" :lng="store.nowLng" :draggable="true" style="height: 100vh; width: 100%" @onLoadKakaoMap="onLoadKakaoMap">
 
-    <div>{{ addressName }}</div>
+    <div class="address-display">
+      <div class="address-display-contents">{{ addressName }}</div>
+    </div>
+    <template v-show="mapLevel <= 5">
+      <template v-for="marker in markers">
+        <KakaoMapCustomOverlay  :lat="marker.nowLat" :lng="marker.nowLng" :content="content(marker.aptCode, marker.dealAmount, marker.apartmentName)">
+        </KakaoMapCustomOverlay>
+      </template>
+    </template>
 
-    <template v-for="marker in markers">
-      <KakaoMapCustomOverlay  :lat="marker.nowLat" :lng="marker.nowLng" :content="content(marker.aptCode, marker.dealAmount, marker.apartmentName)">
-      </KakaoMapCustomOverlay>
+    <template v-if="mapLevel >= 6 && mapLevel <= 9">
+
     </template>
 
     <template v-for="storeMarker in storeMarkers">

@@ -318,3 +318,21 @@ input:checked ~ .radio {
 .option-overlay-hover p {
     white-space: pre-wrap;
 }
+
+.address-display {
+    z-index: 2;
+    position: absolute;
+    top: 10%;
+    width: 100%;
+    padding: 0 43%;
+    text-align: center;
+}
+
+.address-display-contents {
+    background-color: rgb(255 255 255 / 90%);
+    padding: 4px 3px;
+    border: 1px solid #3b82f6;
+    border-radius: 5px;
+    color: #3b82f6;
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.01);
+}

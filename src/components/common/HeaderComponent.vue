@@ -3,7 +3,6 @@ import { ref, defineEmits, computed } from 'vue'
 import { useMemberStore } from '@/stores/member';
 
 const memberStore = useMemberStore()
-
 const loginMember = computed(() => memberStore.loginMember)
 
 const profile = computed(() => memberStore.profile)
