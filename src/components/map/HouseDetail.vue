@@ -1,6 +1,6 @@
 <script setup>
 import { useHouseStore } from '@/stores/house';
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch, computed, nextTick, onUpdated } from 'vue'
 import RoadView from '@/components/map/RoadView.vue'
 import { AgGridVue } from 'ag-grid-vue3';
 
@@ -15,6 +15,7 @@ const detail = computed(() => {
 
 const dealChartRef = ref(null)
 const chartInstance = ref(null)
+let isAnimating = false;
 
 const rowData = computed(() => detailOrg.value);
 
@@ -26,52 +27,81 @@ const colDefs = [
   { field: 'dealAmount', headerName: '거래금액', flex: 2 }
 ]
 
-watch( ()=> detailOrg, (newValue, oldValue) => {
+
+onMounted( async () => {
   loadDetailData()
+})
+
+watch( ()=> detailOrg, async (newValue, oldValue) => {
+  await nextTick();
+
+  // 차트 애니메이션이 진행중이지 않다면 바로 데이터를 가져온다.
+  if (!isAnimating) {
+    await loadDetailData();
+
+  // 차트 애니메이션이 진행중이라면 기달렸다가 데이터를 가져온다.
+  } else {
+    console.log('Chart is animating, waiting for completion...');
+    const interval = setInterval(() => {
+      if (!isAnimating) {
+        clearInterval(interval);
+        loadDetailData();
+      }
+    }, 100); // Check every 100ms if animation is complete
+  }
 
 }, {deep:true})
 
-const loadDetailData = () => {
+const loadDetailData = async () => {
   if(dealChartRef.value) {
-    const ctx = dealChartRef.value.getContext('2d');
-
-    // 기존 차트가 존재하는 경우 제거
-    if (chartInstance.value) {
-      chartInstance.value.destroy();
-    }
-
-    chartInstance.value = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: detail.value.map(item => {
-          const year = item.dealYear; // 년도 추출
-          const monthDay = item.dealMonth + '/' + item.dealDay; // 월/일 형식으로 변환
-          return year + '/' + monthDay; // 라벨 형식: dealYear/dealDate
-        }),
-        datasets: [{
-          label: '거래 금액',
-          data: detail.value.map(item => parseFloat(item.dealAmount.replace(/,/g, ''))),
-          fill: false,
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
+      chartRendering()
+  }
+  else {
+    //console.warn('dealChartRef is null');
   }
 }
 
-onMounted( () => {
+const chartRendering = async function() {
+  await nextTick()
+  // 기존 차트가 존재하는 경우 제거
+  if (chartInstance.value) {
+    chartInstance.value.destroy();
+  }
 
-  loadDetailData()
-
-})
+  isAnimating = true;
+  const ctx = dealChartRef.value.getContext('2d');
+  console.log(ctx)
+  chartInstance.value = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: detail.value.map(item => {
+        const year = item.dealYear; // 년도 추출
+        const monthDay = item.dealMonth + '/' + item.dealDay; // 월/일 형식으로 변환
+        return year + '/' + monthDay; // 라벨 형식: dealYear/dealDate
+      }),
+      datasets: [{
+        label: '거래 금액',
+        data: detail.value.map(item => parseFloat(item.dealAmount.replace(/,/g, ''))),
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+      animation: {
+        onComplete: () => {
+          isAnimating = false;
+        }
+      }
+    }
+  });
+  console.log(chartInstance.value)
+}
 
 const agGridDefaults = {
   option: {

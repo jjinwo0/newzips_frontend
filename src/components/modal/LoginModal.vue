@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { useMemberStore } from '@/stores/member';
 
+// const apiKey = import.meta.env.VITE_ENV_KAKAO_API_KEY
+
 const store = useMemberStore()
 
 const props = defineProps({
@@ -24,6 +26,11 @@ const handleLogin = () => {
 
   store.login(loginForm.value.username, loginForm.value.password)
   closeModal()
+}
+
+const openKakaoLogin = () => {
+
+  store.kakaoLogin();
 }
 </script>
 
@@ -65,7 +72,8 @@ const handleLogin = () => {
             <div class="">
               <button class="w-full py-2.5 px-5 me-2 mb-2 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-200 text-yellow-400
                               hover:bg-gray-100 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                      type="button">
+                      type="button"
+                      @click="openKakaoLogin">
                 <i class="fa-solid fa-comment"></i> 카카오
               </button>
               <button class="w-full py-2.5 px-5 me-2 mb-2 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-200 text-blue-600

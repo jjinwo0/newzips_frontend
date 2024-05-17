@@ -5,6 +5,7 @@ import NoticeBoard from '@/components/NoticeBoard.vue'
 import BoardDetail from '@/components/BoardDetail.vue'
 import BoardUpdate from '@/components/BoardUpdate.vue'
 import WriteBoard from '@/components/WriteBoard.vue'
+import OAuthRedirect from '@/components/oauth/OAuthRedirect.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/board/update/:id',
       name: 'board-update',
       component: BoardUpdate
+    },
+    {
+      path: '/oauth/success',
+      name: 'oauth',
+      component: OAuthRedirect
     }
   ]
 })

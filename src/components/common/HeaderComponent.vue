@@ -6,6 +6,8 @@ const memberStore = useMemberStore()
 
 const loginMember = computed(() => memberStore.loginMember)
 
+const profile = computed(() => memberStore.profile)
+
 const emit = defineEmits(['open-login-modal', 'open-join-modal'])
 
 const openLoginModal = () => {
@@ -43,7 +45,12 @@ const logout = () => {
         </template>
 
         <template v-else>
-          <div style="padding: 10px 15px;">안녕하세요 <span class="font-bold">{{ loginMember }}</span> 님</div>
+          <div style="margin-top: 5px;">
+            <img :src="profile" alt="" class="profile-image">
+          </div>
+          <div style="padding: 10px 15px;">
+            안녕하세요 <span class="font-bold">{{ loginMember }}</span> 님
+          </div>
           <a href="#" @click="logout">로그아웃</a>
         </template>
 
@@ -55,5 +62,8 @@ const logout = () => {
 </template>
 
 <style scoped>
-
+.profile-image {
+  width: 30px;
+  weight: 30px
+}
 </style>

@@ -1,9 +1,10 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
 import axios from 'axios'
 import ControlPanel from '@/components/map/ControlPanel.vue'
 import { useHouseStore } from '@/stores/house'
 import { KakaoMap, KakaoMapCustomOverlay  } from 'vue3-kakao-maps';
+import StoreOptionPanel from '@/components/map/StoreOptionPanel.vue'
 
 const { VITE_REST_STORE_API } = import.meta.env;
 
@@ -20,12 +21,16 @@ var address = ref({
   dongName : ''
 })
 
+// 옵션 정보를 담는 배열
+var selectedOptions = computed( () => {
+  return [...store.selectedOptions]
+})
+
 // 마커 정보를 담는 객체
-let makers = ref([]);
-// 상점 마커 정보를 담는 객체
-let storeMakers = ref([]);
+let markers = ref([]);
 
-
+// 상가 정보를 담는 객체
+let storeMarkers = ref([]);
 
 onMounted(() => {
   fetchUserLocation()
@@ -75,50 +80,48 @@ function getApartMentInfoByDongName(result, status) {
         let addressName = result[i].address_name;
         [address.value.sidoName, address.value.gugunName, address.value.dongName] = addressName.split(' ');
 
-        console.log(addressName)
-
-        // 법정동 주소에 기반하여 아파트 정보 가져오기
         axios.get(`${store.REST_HOUSE_API}/list/apart`, {
           params: address.value
         })
         .then((response) => {
-          makers.value = [];
-
-          for(var makerInfo of response.data) {
-            makers.value.push({
-              aptCode : makerInfo.aptCode,
-              dealAmount : makerInfo.dealAmount,
-              nowLat : makerInfo.lat,
-              nowLng : makerInfo.lng,
-              apartmentName: makerInfo.apartmentName
-            })
-          }
-          console.log('아파트 정보 ' + makers.value)
+          markers.value = response.data.map((markerInfo) => ({
+              aptCode : markerInfo.aptCode,
+              dealAmount : markerInfo.dealAmount,
+              nowLat : markerInfo.lat,
+              nowLng : markerInfo.lng,
+              apartmentName: markerInfo.apartmentName
+          }))
         })
         .catch((error) => {
           console.log(error)
         })
-        //법정동 주소 및 업종 타입에 기반하여 상권정보 가져오기
-        axios.get(`${VITE_REST_STORE_API}/list`,{
-          params: address.value
-        })
-          .then((response) => {
-            for(var makerInfo of response.data) {
-              storeMakers.value.push({
-                storeCode : makerInfo.storeCode,
-                storeName : makerInfo.storeName,
-                storeTypeName : makerInfo.storeTypeName,
-                doro : makerInfo.doro,
-                lat : makerInfo.lat,
-                lng : makerInfo.lng
-              })
-            }
 
-            console.log('상권 정보 === ' + storeMakers.value)
-          })
-          .catch((error) => {
-            console.log(error)
-          })
+        let params = {...address.value, 'selectedOption' : selectedOptions.value.join(",")};
+        console.log('======================')
+        console.log(params)
+
+        //상권정보 가져오는 api
+        axios.get(`http://localhost:8080/store/list`, {
+          params: params
+        })
+        .then((response) => {
+          storeMarkers.value = [];
+
+          for(var markerInfo of response.data) {
+            storeMarkers.value.push({
+              storeName : markerInfo.storeName,
+              mainCategoryName : markerInfo.mainCategoryName,
+              doro: markerInfo.doro,
+              nowLat : markerInfo.lat,
+              nowLng : markerInfo.lng
+            })
+          }
+
+          console.log('상권정보 ==== ' + storeMarkers.value)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
 
         break;
       }
@@ -165,12 +168,13 @@ const showDetails = (aptCode) => {
 
 
   <KakaoMap :lat="store.nowLat" :lng="store.nowLng" :draggable="true" style="height: 100vh; width: 100%" @onLoadKakaoMap="onLoadKakaoMap">
-    <template v-for="maker in makers">
-      <KakaoMapCustomOverlay  :lat="maker.nowLat" :lng="maker.nowLng" :content="content(maker.aptCode, maker.dealAmount, maker.apartmentName)">
+    <template v-for="marker in markers">
+      <KakaoMapCustomOverlay  :lat="marker.nowLat" :lng="marker.nowLng" :content="content(marker.aptCode, marker.dealAmount, marker.apartmentName)">
 
       </KakaoMapCustomOverlay>
     </template>
 
+    <StoreOptionPanel />
     <ControlPanel />
   </KakaoMap>
 
