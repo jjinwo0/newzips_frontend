@@ -12,6 +12,11 @@ import './assets/main.css';
 
 import { useMemberStore } from './stores/member'
 
+// Polyfill for global object
+if (typeof global === 'undefined') {
+  window.global = window;
+}
+
 const pinia = createPinia()
 const app = createApp(App)
 

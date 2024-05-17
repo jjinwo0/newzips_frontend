@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import ProductList from '@/components/ProductList.vue'
 import NoticeBoard from '@/components/NoticeBoard.vue'
 import BoardDetail from '@/components/BoardDetail.vue'
 import BoardUpdate from '@/components/BoardUpdate.vue'
 import WriteBoard from '@/components/WriteBoard.vue'
 import OAuthRedirect from '@/components/oauth/OAuthRedirect.vue'
+import ExpertList from '@/components/ExpertList.vue'
+import ChatComponent from '@/components/common/ChatComponent.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,9 +17,9 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/products',
-      name: 'product-list',
-      component: ProductList
+      path: '/expert',
+      name: 'expert-list',
+      component: ExpertList
     },
     {
       path: '/board',
@@ -44,6 +45,11 @@ const router = createRouter({
       path: '/oauth/success',
       name: 'oauth',
       component: OAuthRedirect
+    },
+    {
+      path: '/chat',
+      name: 'chat',
+      component: ChatComponent
     }
   ]
 })

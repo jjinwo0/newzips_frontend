@@ -54,7 +54,7 @@ const logout = () => {
           <a href="#" @click="logout">로그아웃</a>
         </template>
 
-        <RouterLink to="/products">상품 목록</RouterLink>
+        <RouterLink to="/expert">전문가 Q&A</RouterLink>
         <RouterLink to="/board">공지사항</RouterLink>
       </div>
     </nav>
