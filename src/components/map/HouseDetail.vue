@@ -59,6 +59,7 @@ const loadDetailData = async () => {
   else {
     //console.warn('dealChartRef is null');
   }
+  console.log(detail.value)
 }
 
 const chartRendering = async function() {

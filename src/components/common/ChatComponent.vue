@@ -65,7 +65,7 @@
 <script setup>
 
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { useRoomStore } from '@/stores/room';
+//import { useRoomStore } from '@/stores/room';
 import { Client } from "@stomp/stompjs"
 
 const store = useRoomStore()

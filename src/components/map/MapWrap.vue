@@ -31,14 +31,18 @@ var selectedOptions = computed( () => {
   return [...store.selectedOptions]
 })
 
-// 마커 정보를 담는 객체
-let markers = ref([]);
+// 마커 정보를 담는 객체 배열
+const markers = ref([]);
 
-// 상가 정보를 담는 객체
-let storeMarkers = ref([]);
+// 상가 정보를 담는 마커 배열
+const storeMarkers = ref([]);
+
+// 구군 평균 실거래가 정보를 담는 마커 배열
+const gugunMarkers = ref([]);
 
 onMounted(() => {
   fetchUserLocation()
+
 })
 
 watch([() => store.nowLat, () => store.nowLng], ([lat, lng], [oldLat, oldLng]) => {
@@ -58,6 +62,36 @@ async function fetchUserLocation() {
 
 }
 
+// 숫자 포맷
+const formatNumber = (value) => {
+  let num = Number(value);
+  // 소수점 이하 자리가 0인지 확인
+  if (num % 1 === 0) {
+    // 정수로 변환
+    return num.toFixed(0);
+  } else {
+    // 소수점 이하 자리를 유지
+    return num.toFixed(1);
+  }
+}
+
+
+// 구군 평균 실거래가 정보를 받아온다.
+async function fetchGugunMarkers() {
+  await axios.get(`${store.REST_HOUSE_API}/markers/gugun-avg-deal`)
+    .then((response) => {
+      gugunMarkers.value = response.data.map((markerInfo) => ({
+        gugunName : markerInfo.gugunName,
+        avgDealAmount : markerInfo.avgDealAmount,
+        nowLat : markerInfo.lat,
+        nowLng : markerInfo.lng
+        })
+      )
+    })
+
+  //console.log('받아온 구군정보' + JSON.stringify(gugunMarkers.value, null, 2))
+}
+
 // 높이 10 이상은 시도
 // 높이 9~7 부터 시군구
 // 높이 6~4 부터 동 ->  일정 갯수
@@ -66,6 +100,8 @@ const onLoadKakaoMap = (mapRef) => {
 
   // 주소-좌표 변환 객체를 생성합니다
   geocoder = new kakao.maps.services.Geocoder();
+
+  fetchGugunMarkers()
 
   map.value = mapRef;
   map.value.setMinLevel(1) // 맵 최저 level 지점
@@ -106,7 +142,7 @@ function getApartMentInfoByDongName(result, status) {
         .then((response) => {
           markers.value = response.data.map((markerInfo) => ({
               aptCode : markerInfo.aptCode,
-              dealAmount : markerInfo.dealAmount,
+              dealAmount : formatNumber(markerInfo.dealAmount),
               nowLat : markerInfo.lat,
               nowLng : markerInfo.lng,
               apartmentName: markerInfo.apartmentName
@@ -115,6 +151,8 @@ function getApartMentInfoByDongName(result, status) {
         .catch((error) => {
           console.log(error)
         })
+
+        console.log('받아온 아파트정보' + JSON.stringify(markers.value, null, 2))
 
         let params = {...address.value, 'selectedOption' : selectedOptions.value.join(",")};
 
@@ -181,10 +219,15 @@ const makeStoreMarker = (storeName, mainCategoryCode, mainCategoryName, doro) =>
   else if(mainCategoryCode === store.sportsCode) {
     html += `<div class="house-info-overlay sports-info-overlay" onmouseover="showStoreDetail(event, '${storeName}', '${mainCategoryName}', '${doro}')" onmouseout="closeStoreDetail(event)">`;
   }
-
-
-
     return html
+}
+
+// 구군 마커 커스텀 오버레이 설정
+const makeGugunMarker = (gugunName, avgDealAmount) => {
+  let html = `<div class="house-info-overlay" style="background-color: #f65a3b">
+              <div class="apart-amount" style="background-color: #f65a3b">${avgDealAmount}억</div>
+              <p class="apart-name" style="">${gugunName}</p></div>`;
+  return html
 }
 
 // 해당 아파트에 대한 상세 정보를 보여주는 전역 메서드
@@ -245,15 +288,18 @@ const showDetails = (aptCode) => {
     <div class="address-display">
       <div class="address-display-contents">{{ addressName }}</div>
     </div>
-    <template v-show="mapLevel <= 5">
+    <template v-if="mapLevel <= 6">
       <template v-for="marker in markers">
         <KakaoMapCustomOverlay  :lat="marker.nowLat" :lng="marker.nowLng" :content="content(marker.aptCode, marker.dealAmount, marker.apartmentName)">
         </KakaoMapCustomOverlay>
       </template>
     </template>
 
-    <template v-if="mapLevel >= 6 && mapLevel <= 9">
-
+    <template v-if="mapLevel >= 6 && mapLevel <= 10">
+      <template v-for="gugunMarker in gugunMarkers">
+        <KakaoMapCustomOverlay  :lat="gugunMarker.nowLat" :lng="gugunMarker.nowLng" :content="makeGugunMarker(gugunMarker.gugunName, gugunMarker.avgDealAmount)">
+        </KakaoMapCustomOverlay>
+      </template>
     </template>
 
     <template v-for="storeMarker in storeMarkers">
