@@ -8,6 +8,7 @@ const store = useHouseStore()
 const foodSelected = ref(false)
 const pencilSelected = ref(false)
 const gymSelected = ref(false)
+const hospitalSelected = ref(false)
 
 
 
@@ -24,6 +25,11 @@ const togglePencilSelected = () => {
 const toggleGymSelected = () => {
   gymSelected.value = !gymSelected.value
   pushOptionCode(gymSelected.value, store.sportsCode)
+}
+
+const toggleHospitalSelected = () => {
+  hospitalSelected.value = !hospitalSelected.value
+  pushOptionCode(hospitalSelected.value, store.hospitalCode)
 }
 
 // 선택 여부에 따른 옵션 코드 추가 함수
@@ -52,6 +58,10 @@ let pushOptionCode = (isSelected, optionCode) => {
 
     <button @click="toggleGymSelected" :class="{'btn-gym-option-selected' : gymSelected}" class="btn-option-select">
       <i class="fa-solid fa-dumbbell"></i>
+    </button>
+
+    <button @click="toggleHospitalSelected" :class="{'btn-hospital-option-selected' : hospitalSelected}" class="btn-option-select">
+      <i class="fa-solid fa-hospital"></i>
     </button>
   </div>
 

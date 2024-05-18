@@ -4,8 +4,8 @@ import axios from 'axios'
 import ControlPanel from '@/components/map/ControlPanel.vue'
 import { useHouseStore } from '@/stores/house'
 import { KakaoMap, KakaoMapCustomOverlay  } from 'vue3-kakao-maps';
+import { storeToRefs } from 'pinia';
 import StoreOptionPanel from '@/components/map/StoreOptionPanel.vue'
-
 const { VITE_REST_STORE_API } = import.meta.env;
 
 const store = useHouseStore()
@@ -26,8 +26,7 @@ var address = ref({
   dongName : ''
 })
 
-// 옵션 정보를 담는 배열
-var selectedOptions = computed( () => {
+const selectedOptions = computed(() => {
   return [...store.selectedOptions]
 })
 
@@ -45,12 +44,15 @@ onMounted(() => {
 
 })
 
+// 지표 위도 좌표 변경 감시
 watch([() => store.nowLat, () => store.nowLng], ([lat, lng], [oldLat, oldLng]) => {
   if(map.value && lat && lng){
     const moveLatLng = new kakao.maps.LatLng(lat, lng);
     map.value.panTo(moveLatLng);
   }
 }, { immediate: true });
+
+
 
 // ip 주소를 바탕으로 유저의 현재 위도 경도를 받아온다.
 async function fetchUserLocation() {
@@ -114,7 +116,7 @@ const onLoadKakaoMap = (mapRef) => {
   kakao.maps.event.addListener(map.value, 'zoom_changed', function() {
     if(map.value) {
       mapLevel.value = map.value.getLevel();
-      console.log('레벨 : ' + mapLevel.value)
+      //console.log('레벨 : ' + mapLevel.value)
     }
   });
 
@@ -124,7 +126,11 @@ const onLoadKakaoMap = (mapRef) => {
 function searchAddrFromCoords(coords, callback) {
   // 좌표로 행정동 주소 정보를 요청합니다
   geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback);
+
+
 }
+
+
 
 // 지도 중심좌표에 대한 주소정보를 바탕으로 아파트 정보를 가져오는 함수
 function getApartMentInfoByDongName(result, status) {
@@ -132,7 +138,7 @@ function getApartMentInfoByDongName(result, status) {
 
     for(var i = 0; i < result.length; i++) {
       // 행정동의 region_type 값은 'H' 이므로
-      if (result[i].region_type === 'H') {
+      if (result[i].region_type === 'B') {
         addressName.value = result[i].address_name;
         [address.value.sidoName, address.value.gugunName, address.value.dongName] = addressName.value.split(' ');
 
@@ -152,38 +158,47 @@ function getApartMentInfoByDongName(result, status) {
           console.log(error)
         })
 
-        console.log('받아온 아파트정보' + JSON.stringify(markers.value, null, 2))
+        //console.log('받아온 아파트정보' + JSON.stringify(markers.value, null, 2))
 
-        let params = {...address.value, 'selectedOption' : selectedOptions.value.join(",")};
-
-        //상권정보 가져오는 api
-        axios.get(`http://localhost:8080/store/list`, {
-          params: params
-        })
-        .then((response) => {
-          storeMarkers.value = [];
-
-          storeMarkers.value = response.data.map((markerInfo) => ({
-              storeName : markerInfo.storeName,
-              mainCategoryCode : markerInfo.mainCategoryCode,
-              mainCategoryName : markerInfo.mainCategoryName,
-              doro: markerInfo.doro,
-              nowLat : markerInfo.lat,
-              nowLng : markerInfo.lng
-          }))
-
-
-          //console.log('상권정보 ==== ' +  JSON.stringify(storeMarkers.value, null, 2))
-        })
-        .catch((error) => {
-          console.log(error)
-        })
+        getStoreInfoByDongName()
 
         break;
       }
     }
   }
 }
+
+// 상가정보를 조회하는 메서드
+const getStoreInfoByDongName = ()=> {
+
+  let params = {...address.value, 'selectedOption' : selectedOptions.value.join(",")};
+
+  axios.get(`http://localhost:8080/store/list`, {
+    params: params
+  })
+    .then((response) => {
+      storeMarkers.value = [];
+
+      storeMarkers.value = response.data.map((markerInfo) => ({
+        storeName : markerInfo.storeName,
+        mainCategoryCode : markerInfo.mainCategoryCode,
+        mainCategoryName : markerInfo.mainCategoryName,
+        doro: markerInfo.doro,
+        nowLat : markerInfo.lat,
+        nowLng : markerInfo.lng
+      }))
+
+      //console.log('상권정보 ==== ' +  JSON.stringify(storeMarkers.value, null, 2))
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
+// 상가 옵셔 변경 감시
+watch(selectedOptions, (newOptions, oldOptions) => {
+  getStoreInfoByDongName();
+});
 
 const shortenWords = (str, length = 8) => {
   let result = '';
@@ -219,6 +234,10 @@ const makeStoreMarker = (storeName, mainCategoryCode, mainCategoryName, doro) =>
   else if(mainCategoryCode === store.sportsCode) {
     html += `<div class="house-info-overlay sports-info-overlay" onmouseover="showStoreDetail(event, '${storeName}', '${mainCategoryName}', '${doro}')" onmouseout="closeStoreDetail(event)">`;
   }
+  else if(mainCategoryCode === store.hospitalCode) {
+    html += `<div class="house-info-overlay hospital-info-overlay" onmouseover="showStoreDetail(event, '${storeName}', '${mainCategoryName}', '${doro}')" onmouseout="closeStoreDetail(event)">`;
+  }
+
     return html
 }
 
