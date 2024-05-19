@@ -59,6 +59,7 @@ const payment = (price) => {
 }
 
 onMounted(() => {
+  // 현재 유저가 EnteredRoom에 있는 Room 이라면 getRoomList할 때 안나와야 함
   roomStore.getRoomList();
 
   expertList.value = roomStore.roomList;
