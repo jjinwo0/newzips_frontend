@@ -2,18 +2,23 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import '@toast-ui/editor/dist/toastui-editor-viewer.css'; // Viewer 스타일
+import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
+import HeaderComponent from '@/components/common/HeaderComponent.vue'
+
 
 const route = useRoute()
 const router = useRouter()
 
 const id = ref(route.params.id)
-
 const board = ref({})
 
-const getBoard = () => {
-  axios.get(`http://localhost:8080/board/list/${id.value}`)
+const viewerRef = ref(null);
+let viewerInstance = null
+
+const getBoard = async () => {
+  await axios.get(`http://localhost:8080/board/list/${id.value}`)
   .then((res) => {
-    console.log(res.data)
     board.value = res.data;
   })
   .catch((err) => {
@@ -36,39 +41,43 @@ const moveUpdate = () => {
   router.push({ name: 'board-update', params:{ id: id.value } });
 }
 
-onMounted(() => {
-  getBoard()
+onMounted(async () => {
+  await getBoard()
+
+  viewerInstance = new Viewer({
+    el: viewerRef.value,
+    height: '600px',
+    initialValue: board.value.content
+  });
+
+  console.log(viewerInstance)
+
 })
+
+//console.log(board.value.content)
+//console.log(viewerInstance)
+//
+// viewerInstance.setMarkdown(board.value.content)
 </script>
 
 <template>
-  <div class="container mt-5">
-    <div class="card">  
-      <div class="card-body">
-        <!-- 게시물 내용을 테이블 형식으로 표시 -->
-        <table class="table">
-          <tbody>
-            <tr>
-              <th scope="row">제목</th>
-              <td>{{ board.title }}</td>
-            </tr>
-            <tr>
-              <th scope="row">내용</th>
-              <td>{{ board.content }}</td>
-            </tr>
-            <tr>
-              <th scope="row">작성자</th>
-              <td>{{ board.author }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="text-end">
-          <button type="button" class="btn btn-primary" @click="moveUpdate">수정</button>
-          <button type="button" class="btn btn-danger" @click="deleteBoard">삭제</button>
+  <HeaderComponent />
+
+  <div class="board-container" >
+    <div style="padding: 0 10%">
+      <div class="board-content" style="min-height: 80vh; display: flex; flex-direction: column;justify-content: space-between;">
+        <div ref="viewerRef" ></div>
+        <div style="display:flex; column-gap: 0.5rem; align-items: center; justify-content: flex-end; margin-top: 10px">
+          <button class="bg-gray-300 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded shadow-lg" @click="deleteBoard">삭제</button>
+          <button class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded shadow-lg" @click="moveUpdate">수정</button>
         </div>
       </div>
     </div>
   </div>
+
+
+
+
 </template>
 
 <style scoped>

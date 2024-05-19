@@ -1,6 +1,7 @@
 <script setup>
 import axios from "axios";
 import { onMounted, ref } from "vue";
+import HeaderComponent from '@/components/common/HeaderComponent.vue'
 
 const boardList = ref([])
 
@@ -15,38 +16,60 @@ const getBoardList = () => {
   })
 }
 
+const extractText = (text) => {
+  // 정규 표현식을 사용하여 텍스트에서 한글과 영문자만 추출
+  return text.replace(/[^\가-힣a-zA-Z \n]/g, '');
+}
+
 onMounted(() => {
   getBoardList()
 })
 </script>
 
 <template>
-  <div class="container mt-5">
-    <h2 class="mb-3 text-center">공지사항</h2>
-    <div class="table-responsive">
-      <table class="table table-hover table-bordered">
-        <thead class="table-header">
-          <tr>
-            <th scope="col" class="text-center">No</th>
-            <th scope="col">제목</th>
-            <th scope="col">작성일</th>
-            <th scope="col">최종수정일</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(board, index) in boardList" :key="board.id" :class="{'table-row-light': index % 2 === 0, 'table-row-dark': index % 2 !== 0}">
-            <th scope="row" class="text-center">{{ board.id }}</th>
-            <td><router-link :to="{ name: 'board-detail', params: { id: board.id }}">{{ board.title }}</router-link></td>
-            <td>{{ board.createdAt }}</td>
-            <td>{{ board.updatedAt }}</td>
-          </tr>
-        </tbody>
-      </table>
+  <HeaderComponent />
+  <div class="board-container">
+    <div class="bg-gradient-to-r" style="background: linear-gradient(to right, #06b6d4, #76aaff);">
+      <div style="padding: 0 10%">
+        <div style="display: flex; justify-content: end">
+          <img src="@/assets/image/board-background.gif" style="width: 170px; float: right;">
+        </div>
+        <div class="font-bold text-3xl text-white" style="text-align: center">공지사항</div>
+        <img src="@/assets/image/board-background2.png" style="width: 170px;">
+      </div>
     </div>
-    <!-- 새 글 작성 버튼 추가 -->
-    <div class="text-end pb-3">
-      <router-link to="/board/write" class="btn btn-primary">새 글 작성</router-link>
+
+    <div style="padding: 0 10%">
+      <div class="board-content">
+        <div style="width: 100%; height: 50px; text-align: right;">
+          <router-link to="/board/write" class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded shadow-lg">
+            글쓰기
+          </router-link>
+        </div>
+
+        <template v-for="(board, index) in boardList" :key="board.id" >
+          <router-link :to="{ name: 'board-detail', params: { id: board.id }}">
+          <!-- 게시글 -->
+          <div style="padding: 20px 20px 0px; gap:20px; display: grid;">
+            <span class="text-gray-900">{{ board.title }}</span>
+            <div class="text-gray-500">
+              {{ extractText(board.content) }}
+            </div>
+            <div style="display: flex; justify-content: space-between">
+<!--            <div style="display:flex; column-gap: 1rem; align-items: center;">-->
+<!--              <i class="fa-regular fa-message"></i><span>2</span>-->
+<!--              <i class="fa-regular fa-eye"></i><span>3</span>-->
+<!--            </div>-->
+              <span class="text-gray-400">{{ board.createdAt }}</span>
+            </div>
+            <hr>
+          </div>
+          </router-link>
+        </template>
+
+      </div>
     </div>
+
   </div>
 </template>
 

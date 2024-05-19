@@ -89,6 +89,22 @@ h1 {
     padding-top: 2rem;
 }
 
+.board-container {
+    min-height: 100vh;
+    max-width: 100%;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding-top: 4rem;
+}
+
+.board-content {
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+    border-radius: 5px;
+    padding: 20px;
+}
+
 .left-handle {
     z-index: 10;
     position: absolute;
