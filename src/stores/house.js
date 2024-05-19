@@ -53,7 +53,7 @@ export const useHouseStore = defineStore('house', () => {
     searchResult.value = ''
     searchTradingInfoResult.value = ''
 
-    axios.get(`${REST_HOUSE_API}/list/name/${name}`)
+    axios.get(`/list/name/${name}`)
       .then((res) => {
         searchResult.value = res.data
         if(searchResult.value.length < 1) {

@@ -63,6 +63,7 @@ let pushOptionCode = (isSelected, optionCode) => {
     <button @click="toggleHospitalSelected" :class="{'btn-hospital-option-selected' : hospitalSelected}" class="btn-option-select">
       <i class="fa-solid fa-hospital"></i>
     </button>
+
   </div>
 
 </div>
