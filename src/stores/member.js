@@ -12,6 +12,8 @@ const loginMember = ref(null)
 
 const profile = ref(null)
 
+const memberId = ref('')
+
 export const useMemberStore = defineStore('member', () => {
 
   // 로그인 함수
@@ -31,6 +33,8 @@ export const useMemberStore = defineStore('member', () => {
       loginMember.value = res.data.nickname;
 
       profile.value = res.data.profile
+
+      memberId.value = res.data.id;
 
       router.push('/')
     })
@@ -109,6 +113,7 @@ export const useMemberStore = defineStore('member', () => {
       if (token && token.username) {
         loginMember.value = token.nickname;
         profile.value =token.profile;
+        memberId.value = token.id;
       }
     }
   }
@@ -167,5 +172,5 @@ export const useMemberStore = defineStore('member', () => {
     return Promise.reject(error)
   })
 
-  return { login, logout, loginMember, initializeAuthState, kakaoLogin, apiKey, kakaoLoginRedirect, profile }
+  return { login, logout, loginMember, initializeAuthState, kakaoLogin, apiKey, kakaoLoginRedirect, profile, memberId }
 })

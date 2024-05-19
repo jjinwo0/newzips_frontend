@@ -1,28 +1,128 @@
+<script setup>
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { useRoomStore } from '@/stores/room';
+import WebSocket from '@/config/WebSocket';
+import HeaderComponent from './HeaderComponent.vue';
+import LoginModal from '../modal/LoginModal.vue';
+import JoinModal from '../modal/JoinModal.vue';
+import { useMemberStore } from '@/stores/member';
+import { useRouter } from 'vue-router';
+
+// Pinia store 사용
+const roomStore = useRoomStore();
+const memberStore = useMemberStore();
+
+const router = useRouter();
+
+const enteredRooms = ref([])
+const enteredRoomName = ref('');
+const joinRoom = ref(null);
+const messages = ref([]);
+const isLoading = ref(true);
+const textMessage = ref('');
+const loginMember = computed(() => memberStore.loginMember)
+
+// 모달 관련 상태
+const showModal = ref(false)
+const showJoinModal = ref(false)
+
+// 모달 제어 함수
+const openModal = () => showModal.value = true
+const openJoinModal = () => showJoinModal.value = true
+const closeModal = () => showModal.value = false
+const closeJoinModal = () => showJoinModal.value = false
+
+// 채팅방에 입장하는 함수
+async function openChatRoom(room) {
+  enteredRoomName.value = room.name;
+  isLoading.value = true;
+  joinRoom.value = room;
+
+  console.log('join room :: ', joinRoom.value)
+
+  // 특정 방의 메시지를 구독
+  WebSocket.subscribeToRoom(room.id, (message) => {
+    messages.value.push(message);
+    isLoading.value = false;
+  });
+
+  console.log('messages :: ', messages.value)
+
+  // TODO: 여기에 사용자가 방에 입장했다는 것을 서버에 알리는 코드를 추가할 수 있습니다.
+  WebSocket.enterRoom(room.id, { userId: memberStore.loginMember }); // 예시로 사용자 ID를 넣었습니다. 실제 구현에 맞게 수정해야 합니다.
+}
+
+// 메시지 전송 함수
+function send() {
+  if (textMessage.value.trim() === '') return;
+
+    if(joinRoom.value){
+    const currentRoomId = joinRoom.value.room_id;
+
+    console.log('전송 : ', textMessage.value);
+    console.log('roomId : ', currentRoomId);
+    
+    if (currentRoomId) {
+      WebSocket.sendMessage(currentRoomId, { text: textMessage.value });
+      messages.value.push(textMessage.value)
+
+      console.log('messages::', messages.value)
+      textMessage.value = ''; // 입력 필드 초기화
+    }
+  } 
+}
+
+const backToList = () => {
+  router.push({ name: 'expert-list' })
+  WebSocket.disconnect()
+}
+
+onMounted(() => {
+  roomStore.fetchEnteredRooms(); // 사용자가 참여한 방 목록을 가져옵니다.
+
+  const storedRooms = localStorage.getItem('room');
+  if (storedRooms) {
+    enteredRooms.value = JSON.parse(storedRooms).enteredRooms;
+  }
+
+  WebSocket.connect(() => {
+    console.log('WebSocket 연결됨');
+    // WebSocket 연결 후 필요한 작업을 수행합니다.
+  });
+});
+
+onBeforeUnmount(() => {
+  WebSocket.disconnect();
+});
+</script>
+
 <template>
-  <div class="wrap">
-    <div class="container mx-auto">
+  <div>
+    <HeaderComponent @open-login-modal="openModal" @open-join-modal="openJoinModal" />
+  </div>
+  
+  <div class="login-modal-container">
+    <LoginModal :show="showModal" @update="closeModal" />
+  </div>
+
+  <div class="login-modal-container">
+    <JoinModal :show="showJoinModal" @update="closeJoinModal" />
+  </div>
+
+  <div class="wrap bg-white" style="margin-top: 3rem;">
+    <div class="container mx-auto bg-white">
       <section class="room-list">
         <section class="room-tab flex border-b">
-          <div :class="{'bg-gray-200': isAllTab}" @click="activeTab('ALL')" class="flex-1 text-center py-2">전체 채팅 방</div>
-          <div :class="{'bg-gray-200': !isAllTab}" @click="activeTab('MINE')" class="flex-1 text-center py-2">내가 속한 채팅 방</div>
+          <div :class="{'bg-gray-200': !isAllTab}" class="flex-1 text-center py-2">내가 속한 채팅 방</div>
         </section>
         <section style="height: calc(100% - 50px); overflow: auto;">
           <keep-alive>
             <div>
-              <template v-if="isAllTab">
-                <template v-for="room in rooms" :key="room.id">
+              <template v-if="enteredRooms.length">
+                <template v-for="(room, index) in enteredRooms" :key="index">
                   <section class="p-2">
-                    <div class="room-item p-4 bg-white shadow-md rounded cursor-pointer" @click="openChatRoom(room)">
-                      <p>{{room.name}}</p>
-                    </div>
-                  </section>
-                </template>
-              </template>
-              <template v-else>
-                <template v-for="room in enteredRooms" :key="room.id">
-                  <section class="p-2">
-                    <div class="room-item p-4 bg-white shadow-md rounded cursor-pointer" @click="openChatRoom(room)">
-                      <p>{{room.name}}</p>
+                    <div class="room-item p-4 bg-white rounded cursor-pointer" @click="openChatRoom(room)">
+                      <p>{{ room.name }}</p>
                     </div>
                   </section>
                 </template>
@@ -34,148 +134,49 @@
       <section class="chat-area">
         <div class="chat-wrap">
           <section class="chat-header p-4 bg-gray-800 text-white">
-            <p>접속 중인 방 이름 : <span>{{enteredRoomName}}</span></p>
+            <p>접속 중인 방 이름 : <span>{{ enteredRoomName }}</span></p>
           </section>
 
-          <section class="chat-list" v-if="!isLoading">
-            <template v-for="message in messages" :key="message.id">
-              <div class="w-full min-h-[60px] my-2 px-2">
-                <div class="bg-green-200 min-h-[60px] p-2">
-                  {{message}}
+          <section class="chat-list" v-if="messages">
+            <template v-for="(message, index) in messages" :key="index">
+              <div class="w-full my-2 flex flex-col">
+                <!-- 로그인 멤버 정보와 메시지를 표시하는 부분 -->
+                <div class="flex items-center justify-start mb-1">
+                  <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                    <!-- 이 부분에 로그인 멤버의 이니셜을 표시할 수 있습니다. 예시로 'LM'을 넣었습니다. -->
+                    {{ loginMember.substring(0, 1) }}
+                  </div>
+                  <div class="ml-2 text-sm text-gray-600">
+                    <!-- 로그인 멤버의 이름을 표시합니다. 예시로 '로그인멤버'를 넣었습니다. -->
+                    {{ loginMember }}
+                  </div>
+                </div>
+                <!-- 메시지 내용을 표시하는 부분 -->
+                <div class="w-full px-2">
+                  <div class="bg-green-200 min-h-[60px] p-4 rounded-lg relative before:absolute before:bottom-0 before:left-10 before:border-t-8 before:border-l-8 before:border-transparent before:border-t-green-200 before:content-['']">
+                    {{ message }}
+                  </div>
                 </div>
               </div>
             </template>
           </section>
 
-          <base-spinner v-else/>
 
+          <base-spinner v-else/>
 
           <section class="chat-input-area flex mt-2">
             <input class="chat-input flex-1 p-2 border" type="text" @keyup.enter="send" v-model="textMessage"/>
             <button class="chat-input-send-btn ml-2 px-4 py-2 bg-blue-500 text-white" type="button" @click="send">보내기</button>
           </section>
-
         </div>
       </section>
     </div>
+            <div class="fixed-buttons">
+              <button class="list-back-btn px-4 py-2 bg-yellow-500 text-white mr-2" style="border-radius: 10%;" type="button" @click="backToList">목록으로</button>
+              <button class="leave-room-btn px-4 py-2 bg-red-500 text-white" style="border-radius: 10%;" type="button" @click="leaveRoom">나가기</button>
+            </div>
   </div>
 </template>
-
-
-<script setup>
-
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-//import { useRoomStore } from '@/stores/room';
-import { Client } from "@stomp/stompjs"
-
-const store = useRoomStore()
-const activeRoomTab = ref("ALL")
-const rooms = ref([])
-const enteredRooms = ref([])
-const isLoading = ref(false)
-const currentRoom = ref(null)
-const websocketClient = ref(null)
-const textMessage = ref("")
-const messages = ref([])
-
-const activatedRoomTab = computed(() => {
-  return activeRoomTab.value === 'ALL' ? 'active-all-room' : 'all-room';
-})
-
-const activatedEnteredTab = computed(() => {
-  return activeRoomTab.value === 'MINE'? 'active-my-room' : 'my-room';
-})
-
-const isAllTab = computed(() => {
-  return activeRoomTab.value ==='ALL';
-})
-
-const enteredRoomName = computed(() => {
-  if(!currentRoom.value) return "";
-  return currentRoom.value.name;
-})
-
-const loadRooms = async () => {
-  isLoading.value = true;
-  try {
-    await store.rooms()
-    await store.enteredRooms()
-
-    rooms.value = store.getters['user/rooms']
-    enteredRooms.value = store.getters['user/enteredRooms']
-  } catch(error) {
-    console.error(error)
-  } finally {
-    isLoading.value = false;
-  }
-}
-
-onMounted(async () => {
-  await loadRooms()
-})
-
-onBeforeUnmount(() => {
-  disconnect()
-})
-
-const activeTab = (activeTab) => {
-  activeRoomTab.value = activeTab;
-}
-
-const openChatRoom = async (room) => {
-  isLoading.value = true;
-
-  await disconnect();
-  currentRoom.value = room;
-  clear();
-  await connect();
-}
-
-const disconnect = () => {
-  if(websocketClient.value) {
-    websocketClient.value.deactivate();
-  }
-}
-
-const connect = () => {
-  const url = "ws://localhost:8080/ws/";
-  websocketClient.value = new Client({
-    brokerURL: url,
-    onConnect: () => {
-      websocketClient.value.subscribe(`/sub/room/${currentRoom.value.id}`, msg => {
-        messages.value.push(msg.body);
-      })
-
-      isLoading.value = false;
-    },
-
-    onWebSocketError: () => {
-      isLoading.value = false;
-    },
-  })
-
-  websocketClient.value.activate();
-}
-
-const send = () => {
-  if(!websocketClient.value || textMessage.value.trim() === '') return;
-
-  websocketClient.value.publish({
-    destination: `/pub/room/${currentRoom.value.id}`,
-    body: JSON.stringify({message: `${textMessage.value}`, writer: "user1"}),
-  });
-
-  clear(); // Send 후 메시지 입력란을 비웁니다.
-}
-
-const clear = () => {
-  textMessage.value = "";
-  messages.value = [];
-}
-
-</script>
-
-
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
@@ -331,4 +332,13 @@ html {
   border-radius: 10px;
   border-style: none;
 }
+
+.fixed-buttons {
+  position: fixed;
+  bottom: 20px; /* 화면 아래쪽으로부터의 거리 */
+  right: 20px; /* 화면 오른쪽으로부터의 거리 */
+  display: flex;
+  gap: 12px; /* 버튼 사이의 간격 */
+}
+
 </style>

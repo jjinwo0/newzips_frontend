@@ -1,19 +1,14 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import HeaderComponent from './common/HeaderComponent.vue';
 import LoginModal from './modal/LoginModal.vue';
 import JoinModal from './modal/JoinModal.vue';
+import { useRoomStore } from '@/stores/room';
 
+const roomStore = useRoomStore();
 const { IMP } = window;
 
-let id = 0;
-
-const expertList = ref([
-  { id: ++id, name: 'test1', description: 'test입니다.', price: 10000 },
-  { id: ++id, name: 'test2', description: 'test입니다.', price: 10000 },
-  { id: ++id, name: 'test3', description: 'test입니다.', price: 10000 },
-  { id: ++id, name: 'test4', description: 'test입니다.', price: 10000 },
-])
+const expertList = ref([])
 
 const showModal = ref(false)
 const showJoinModal = ref(false)
@@ -38,7 +33,7 @@ const closeJoinModal = () => {
   
 // }
 
-const payment = () => {
+const payment = (price) => {
   IMP.init('imp78754551');
 
 	
@@ -47,7 +42,7 @@ const payment = () => {
         pay_method: "card",
         merchant_uid: "ORD20180131-0000011",
         name: "SSAFY HOUSE",
-        amount: 10000,
+        amount: price,
         buyer_email: "test@ssafy.com",
         buyer_name: "SSAFY USER",
         buyer_tel: "010-1234-5678",
@@ -62,6 +57,12 @@ const payment = () => {
         }
       });
 }
+
+onMounted(() => {
+  roomStore.getRoomList();
+
+  expertList.value = roomStore.roomList;
+})
 </script>
 
 <template>
@@ -89,20 +90,20 @@ const payment = () => {
         <tr>
           <th scope="col" class="py-3 px-6">ID</th>
           <th scope="col" class="py-3 px-6">Name</th>
-          <th scope="col" class="py-3 px-6">Description</th>
+          <th scope="col" class="py-3 px-6">Price (30min)</th>
           <th scope="col" class="py-3 px-6">Detail</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody v-if="expertList">
         <tr v-for="expert in expertList" :key="expert.id" class="border-b odd:bg-white even:bg-gray-50">
-          <td class="py-4 px-6">{{ expert.id }}</td>
+          <td class="py-4 px-6">{{ expert.roomId }}</td>
           <td class="py-4 px-6">{{ expert.name }}</td>
-          <td class="py-4 px-6">{{ expert.description }}</td>
+          <td class="py-4 px-6">{{ expert.price }}원</td>
           <td class="py-4 px-6">
             <!-- <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300"
                     @click="showExpertDetail(expert.id)">상세 보기</button> -->
             <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300"
-            @click="payment">결제</button>                    
+            @click="payment(expert.price)">결제</button>                    
           </td>
         </tr>
       </tbody>
