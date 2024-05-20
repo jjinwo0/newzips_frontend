@@ -1,11 +1,18 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import HeaderComponent from './common/HeaderComponent.vue';
 import LoginModal from './modal/LoginModal.vue';
 import JoinModal from './modal/JoinModal.vue';
 import { useRoomStore } from '@/stores/room';
+import { useMemberStore } from '@/stores/member';
+import { useRouter } from 'vue-router';
 
 const roomStore = useRoomStore();
+const memberStore = useMemberStore();
+const router = useRouter();
+
+const memberId = computed(() => memberStore.memberId)
+
 const { IMP } = window;
 
 const expertList = ref([])
@@ -33,7 +40,15 @@ const closeJoinModal = () => {
   
 // }
 
-const payment = (price) => {
+const moveChat = () => {
+  router.push({ name: 'chat' })
+}
+
+const moveChatList = () => {
+  router.push({ name: 'chat' })
+}
+
+const payment = (expert) => {
   IMP.init('imp78754551');
 
 	
@@ -42,7 +57,7 @@ const payment = (price) => {
         pay_method: "card",
         merchant_uid: "ORD20180131-0000011",
         name: "SSAFY HOUSE",
-        amount: price,
+        amount: expert.price,
         buyer_email: "test@ssafy.com",
         buyer_name: "SSAFY USER",
         buyer_tel: "010-1234-5678",
@@ -52,6 +67,8 @@ const payment = (price) => {
         console.log(rsp);
         if (rsp.success) {
           console.log("결제 성공");
+
+          roomStore.create
         } else {
           console.log("결제 실패");
         }
@@ -62,7 +79,14 @@ onMounted(() => {
   // 현재 유저가 EnteredRoom에 있는 Room 이라면 getRoomList할 때 안나와야 함
   roomStore.getRoomList();
 
-  expertList.value = roomStore.roomList;
+  const allRoomList = localStorage.getItem('room');
+
+  if(allRoomList){
+
+    expertList.value = roomStore.roomList;
+  }
+
+  console.log("mounted :: ",expertList.value)
 })
 </script>
 
@@ -96,19 +120,24 @@ onMounted(() => {
         </tr>
       </thead>
       <tbody v-if="expertList">
-        <tr v-for="expert in expertList" :key="expert.id" class="border-b odd:bg-white even:bg-gray-50">
-          <td class="py-4 px-6">{{ expert.roomId }}</td>
-          <td class="py-4 px-6">{{ expert.name }}</td>
+        <tr v-for="(expert, index) in expertList" :key="index" class="border-b odd:bg-white even:bg-gray-50">
+          <td class="py-4 px-6">{{ index+1 }}</td>
+          <td class="py-4 px-6">{{ expert.nickname }}</td>
           <td class="py-4 px-6">{{ expert.price }}원</td>
-          <td class="py-4 px-6">
-            <!-- <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300"
-                    @click="showExpertDetail(expert.id)">상세 보기</button> -->
-            <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300"
-            @click="payment(expert.price)">결제</button>                    
+          <td class="py-4 px-6" v-if="!expert.isEntered">
+            <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300 button-common"
+            @click="payment(expert)">Payment</button>                    
+          </td>
+          <td class="py-4 px-6" v-else>
+            <button class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-blue-700 transition duration-300 button-common"
+            @click="moveChat">Open Chat</button>                    
           </td>
         </tr>
       </tbody>
     </table>
+    <div class="fixed-button-container">
+      <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-blue-700 transition duration-300 button-common" @click="moveChatList">Open Chat List</button>
+    </div>
   </div>
 </template>
 
@@ -124,5 +153,15 @@ onMounted(() => {
 .overflow-x-auto {
   margin-top: 2rem;
   padding: 0 10rem; /* 양 옆에 1rem의 padding 추가 */
+}
+
+.button-common {
+    min-width: 120px; /* 예시 너비, 실제 요구에 맞게 조정 */
+}
+
+.fixed-button-container {
+  position: fixed; /* 고정 위치 */
+  bottom: 20px; /* 하단에서 20px 위 */
+  right: 20px; /* 우측에서 20px 왼쪽 */
 }
 </style>

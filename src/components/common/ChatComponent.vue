@@ -21,10 +21,12 @@ const messages = ref([]);
 const isLoading = ref(true);
 const textMessage = ref('');
 const loginMember = computed(() => memberStore.loginMember)
+const role = computed(() => memberStore.role)
 
 // 모달 관련 상태
 const showModal = ref(false)
 const showJoinModal = ref(false)
+const deleteRoomId = ref(null);
 
 // 모달 제어 함수
 const openModal = () => showModal.value = true
@@ -34,7 +36,7 @@ const closeJoinModal = () => showJoinModal.value = false
 
 // 채팅방에 입장하는 함수
 async function openChatRoom(room) {
-  enteredRoomName.value = room.name;
+  enteredRoomName.value = room.expertNickname;
   isLoading.value = true;
   joinRoom.value = room;
 
@@ -49,7 +51,7 @@ async function openChatRoom(room) {
   console.log('messages :: ', messages.value)
 
   // TODO: 여기에 사용자가 방에 입장했다는 것을 서버에 알리는 코드를 추가할 수 있습니다.
-  WebSocket.enterRoom(room.id, { userId: memberStore.loginMember }); // 예시로 사용자 ID를 넣었습니다. 실제 구현에 맞게 수정해야 합니다.
+  WebSocket.enterRoom(room.id, { userId: memberStore.loginMember });
 }
 
 // 메시지 전송 함수
@@ -75,6 +77,36 @@ function send() {
 const backToList = () => {
   router.push({ name: 'expert-list' })
   WebSocket.disconnect()
+}
+
+// 삭제 대상이 될 채팅방 항목 선택
+const onDelete = (room) => {
+  deleteRoomId.value = room.room_id;
+  enteredRoomName.value = room.expertNickname;
+  isLoading.value = true;
+  joinRoom.value = room;
+
+  console.log('join room :: ', joinRoom.value)
+
+  // 특정 방의 메시지를 구독
+  WebSocket.subscribeToRoom(room.id, (message) => {
+    messages.value.push(message);
+    isLoading.value = false;
+  });
+
+  console.log('messages :: ', messages.value)
+
+  // TODO: 여기에 사용자가 방에 입장했다는 것을 서버에 알리는 코드를 추가할 수 있습니다.
+  WebSocket.enterRoom(room.id, { userId: memberStore.loginMember });
+}
+
+const leaveRoom = () => {
+
+  const nowId = deleteRoomId.value; 
+
+  if(nowId) {
+    roomStore.deleteEnteredRoom(nowId);
+  }
 }
 
 onMounted(() => {
@@ -120,9 +152,14 @@ onBeforeUnmount(() => {
             <div>
               <template v-if="enteredRooms.length">
                 <template v-for="(room, index) in enteredRooms" :key="index">
-                  <section class="p-2">
+                  <section class="p-2" v-if="room.status === 'LIVE'">
                     <div class="room-item p-4 bg-white rounded cursor-pointer" @click="openChatRoom(room)">
-                      <p>{{ room.name }}</p>
+                      <p>{{ room.expertNickname }}</p>
+                    </div>
+                  </section>
+                  <section class="p-2" v-else>
+                    <div class="expired-item p-4 bg-white rounded cursor-pointer" @click="onDelete(room)">
+                      <p>{{ room.expertNickname }}</p>
                     </div>
                   </section>
                 </template>
@@ -173,7 +210,7 @@ onBeforeUnmount(() => {
     </div>
             <div class="fixed-buttons">
               <button class="list-back-btn px-4 py-2 bg-yellow-500 text-white mr-2" style="border-radius: 10%;" type="button" @click="backToList">목록으로</button>
-              <button class="leave-room-btn px-4 py-2 bg-red-500 text-white" style="border-radius: 10%;" type="button" @click="leaveRoom">나가기</button>
+              <button v-if="role === 'EXPERT'" class="leave-room-btn px-4 py-2 bg-red-500 text-white" style="border-radius: 10%;" type="button" @click="leaveRoom">나가기</button>
             </div>
   </div>
 </template>
@@ -275,6 +312,29 @@ html {
 }
 
 .room-item > p {
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+}
+
+
+.expired-item {
+  width: 100%;
+  height: 70px;
+  background: #ce3925;
+  border-radius: 10px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.expired-item:hover {
+  background: #ce631b;
+}
+
+.expired-item > p {
   font-size: 20px;
   font-weight: 800;
   color: white;

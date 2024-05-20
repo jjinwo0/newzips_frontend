@@ -14,6 +14,8 @@ const profile = ref(null)
 
 const memberId = ref('')
 
+const role = ref('')
+
 export const useMemberStore = defineStore('member', () => {
 
   // 로그인 함수
@@ -35,6 +37,8 @@ export const useMemberStore = defineStore('member', () => {
       profile.value = res.data.profile
 
       memberId.value = res.data.id;
+
+      role.value = res.data.role;
 
       router.push('/')
     })
@@ -114,6 +118,7 @@ export const useMemberStore = defineStore('member', () => {
         loginMember.value = token.nickname;
         profile.value =token.profile;
         memberId.value = token.id;
+        role.value = token.role;
       }
     }
   }
