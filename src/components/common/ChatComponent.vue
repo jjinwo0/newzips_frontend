@@ -100,14 +100,6 @@ onBeforeUnmount(() => {
   <div>
     <HeaderComponent @open-login-modal="openModal" @open-join-modal="openJoinModal" />
   </div>
-  
-  <div class="login-modal-container">
-    <LoginModal :show="showModal" @update="closeModal" />
-  </div>
-
-  <div class="login-modal-container">
-    <JoinModal :show="showJoinModal" @update="closeJoinModal" />
-  </div>
 
   <div class="wrap bg-white" style="margin-top: 3rem;">
     <div class="container mx-auto bg-white">

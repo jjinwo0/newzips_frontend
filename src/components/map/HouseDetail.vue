@@ -52,6 +52,7 @@ watch( ()=> detailOrg, async (newValue, oldValue) => {
 
 }, {deep:true})
 
+// 상세 정보를 조회하는 메서드
 const loadDetailData = async () => {
   if(dealChartRef.value) {
       chartRendering()
@@ -59,10 +60,10 @@ const loadDetailData = async () => {
   else {
     //console.warn('dealChartRef is null');
   }
-  console.log(detail.value)
 }
 
 const chartRendering = async function() {
+  // 차트를 넣을 dom이 모두 구현되면 진행
   await nextTick()
   // 기존 차트가 존재하는 경우 제거
   if (chartInstance.value) {
@@ -71,7 +72,7 @@ const chartRendering = async function() {
 
   isAnimating = true;
   const ctx = dealChartRef.value.getContext('2d');
-  console.log(ctx)
+
   chartInstance.value = new Chart(ctx, {
     type: 'line',
     data: {
@@ -101,13 +102,14 @@ const chartRendering = async function() {
       }
     }
   });
-  console.log(chartInstance.value)
+
 }
 
 const agGridDefaults = {
   option: {
     pagination: true,
     paginationPageSize : 10,
+    paginationPageSizeOptions: [10, 20, 50],
     defaultColDef: { headerClass: "centered", cellClass: "centered" }, // 여기
   },
   gridApi: null

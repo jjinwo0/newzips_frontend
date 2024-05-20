@@ -1,21 +1,30 @@
 <script setup>
 import { ref, defineEmits, computed } from 'vue'
 import { useMemberStore } from '@/stores/member';
+import JoinModal from '@/components/modal/JoinModal.vue'
+import LoginModal from '@/components/modal/LoginModal.vue'
 
 const memberStore = useMemberStore()
-const loginMember = computed(() => memberStore.loginMember)
+const loginMember = computed(() => {
+
+  return memberStore.loginMember
+})
+
 
 const profile = computed(() => memberStore.profile)
 
 const emit = defineEmits(['open-login-modal', 'open-join-modal'])
 
-const openLoginModal = () => {
-  emit('open-login-modal') // HomeView로 이벤트를 전달합니다.
-}
 
-const openJoinModal = () => {
-  emit('open-join-modal')
-}
+// 모달 관련 상태
+const showModal = ref(false)
+const showJoinModal = ref(false)
+
+// 모달 제어 함수
+const openLoginModal = () => showModal.value = true
+const openJoinModal = () => showJoinModal.value = true
+const closeModal = () => showModal.value = false
+const closeJoinModal = () => showJoinModal.value = false
 
 const logout = () => {
 
@@ -34,7 +43,9 @@ const logout = () => {
   <div>
     <nav class="navbar">
       <div>
-        <RouterLink to="/">해피해피하우스</RouterLink>
+        <RouterLink to="/">
+          <img src="@/assets/image/logo.png" style="width: 140px;margin-left: 25px;margin-top: 10px;">
+        </RouterLink>
       </div>
 
       <div style="display: flex">
@@ -55,6 +66,17 @@ const logout = () => {
 
         <RouterLink to="/expert">전문가 Q&A</RouterLink>
         <RouterLink to="/board">공지사항</RouterLink>
+
+        <div class="login-modal-container">
+          <!-- 모달 컴포넌트를 여기에 추가합니다. -->
+          <LoginModal :show="showModal" @update="closeModal" />
+        </div>
+
+        <div class="login-modal-container">
+          <!-- 모달 컴포넌트를 여기에 추가합니다. -->
+          <JoinModal :show="showJoinModal" @update="closeJoinModal" />
+        </div>
+
       </div>
     </nav>
   </div>
