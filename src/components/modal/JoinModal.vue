@@ -11,7 +11,8 @@ const emit = defineEmits(['update'])
 const joinForm = ref({
   username: '',
   email: '',
-  password: ''
+  password: '',
+  nickname: ''
 })
 
 const closeModal = () => {
@@ -131,6 +132,12 @@ const joinMember = () => {
               <span class="text-sm" style="color: red">{{ validEmailResult }}</span>
 
             </div>
+
+            <div class="form-group mb-4" style="display: flex; align-items: center; gap: 5px;">
+              <label class="block text-gray-700 text-sm font-bold mb-0 flex-none" style="width: 80px;" for="password">닉네임</label>
+              <input type="text" v-model="joinForm.nickname" id="nickname" name="nickname" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+
             <div class="form-group mb-4" style="display: flex; align-items: center; gap: 5px;">
               <label class="block text-gray-700 text-sm font-bold mb-0 flex-none" style="width: 80px;" for="password">비밀번호</label>
               <input type="password" v-model="joinForm.password" id="password" name="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" required>
