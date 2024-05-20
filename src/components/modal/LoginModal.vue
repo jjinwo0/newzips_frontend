@@ -25,6 +25,8 @@ const handleLogin = () => {
   // console.log('Login attempt with:', loginForm.value.username, loginForm.value.password)
 
   store.login(loginForm.value.username, loginForm.value.password)
+  loginForm.value.username = ''
+  loginForm.value.password = ''
   closeModal()
 }
 

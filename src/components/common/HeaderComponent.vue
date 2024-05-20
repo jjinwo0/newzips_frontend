@@ -6,10 +6,11 @@ import LoginModal from '@/components/modal/LoginModal.vue'
 
 const memberStore = useMemberStore()
 const loginMember = computed(() => {
-
   return memberStore.loginMember
 })
-
+const role = computed(() => {
+  return memberStore.role
+})
 
 const profile = computed(() => memberStore.profile)
 
@@ -64,6 +65,7 @@ const logout = () => {
           <a href="#" @click="logout">로그아웃</a>
         </template>
 
+        <RouterLink to="/admin/dashboard" v-if=" role === 'ADMIN'">관리자 페이지</RouterLink>
         <RouterLink to="/expert">전문가 Q&A</RouterLink>
         <RouterLink to="/board">공지사항</RouterLink>
 

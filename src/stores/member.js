@@ -24,8 +24,6 @@ export const useMemberStore = defineStore('member', () => {
     .then((res) => {
       // 응답으로부터 토큰 받기
 
-      // console.log(res.data)
-
       const tokenDto = JSON.stringify(res.data)
 
       console.log(tokenDto)
@@ -37,6 +35,8 @@ export const useMemberStore = defineStore('member', () => {
       profile.value = res.data.profile
 
       memberId.value = res.data.id;
+
+      console.log(res.data)
 
       role.value = res.data.role;
 
@@ -52,6 +52,8 @@ export const useMemberStore = defineStore('member', () => {
 
     const tokenDto = Cookies.get('tokenDto');
     const token = JSON.parse(tokenDto);
+
+    console.log(token.accessToken)
 
     axios.post(`${REST_MEMBER_API}/logout`, {}, {
       headers: { 'Authorization': `Bearer ${token.accessToken}` }
@@ -177,5 +179,5 @@ export const useMemberStore = defineStore('member', () => {
     return Promise.reject(error)
   })
 
-  return { login, logout, loginMember, initializeAuthState, kakaoLogin, apiKey, kakaoLoginRedirect, profile, memberId }
+  return { login, logout, loginMember, initializeAuthState, kakaoLogin, apiKey, kakaoLoginRedirect, profile, memberId, role }
 })

@@ -2,7 +2,9 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 import HeaderComponent from '@/components/common/HeaderComponent.vue'
+import { useMemberStore } from '@/stores/member.js'
 
+const memberStore = useMemberStore()
 const boardList = ref([])
 
 const getBoardList = () => {
@@ -42,7 +44,7 @@ onMounted(() => {
     <div style="padding: 0 10%">
       <div class="board-content">
         <div style="width: 100%; height: 50px; text-align: right;">
-          <router-link to="/board/write" class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded shadow-lg">
+          <router-link to="/board/write" class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded shadow-lg" v-if=" memberStore.role === 'ADMIN' ">
             글쓰기
           </router-link>
         </div>
