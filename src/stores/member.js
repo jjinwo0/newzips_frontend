@@ -52,34 +52,61 @@ export const useMemberStore = defineStore('member', () => {
   }
 
   // 로그아웃 함수
-  const logout = () => {
+  const logout = () => {``
 
     const tokenDto = Cookies.get('tokenDto');
     const token = JSON.parse(tokenDto);
 
-    axios.post(`${REST_MEMBER_API}/logout`, {}, {
-      headers: { 'Authorization': `Bearer ${token.accessToken}` }
-    })
-    .then(() => {
+    if(token.memberType === 'KAKAO'){
 
-      Cookies.remove('tokenDto')
+      axios.post(`${REST_MEMBER_API}/oauth/kakao/logout`, {}, {
+        headers: { 'Authorization': `Bearer ${token.accessToken}` }
+      })
+      .then((res) => {
 
-      loginMember.value = null;
+        console.log(res.data.id, " :: 카카오 로그아웃 완료");
 
-      profile.value = null;
+        Cookies.remove('tokenDto')
 
-      memberId.value = null;
+        loginMember.value = null;
 
-      role.value = null;
+        profile.value = null;
 
-      memberType.value = null;
+        memberId.value = null;
 
-      router.push('/')
-    })
-    .catch((err) => {
-      console.error("로그아웃 에러 발생 :: ", err.response.data)
-    })
+        role.value = null;
 
+        memberType.value = null;
+
+        router.push('/');
+      })
+      .catch((err) => {
+        console.error("카카오 로그아웃 에러 발생 :: ", err.response.data)
+      })
+    } else {
+      axios.post(`${REST_MEMBER_API}/logout`, {}, {
+        headers: { 'Authorization': `Bearer ${token.accessToken}` }
+      })
+      .then(() => {
+
+        Cookies.remove('tokenDto')
+
+        loginMember.value = null;
+
+        profile.value = null;
+
+        memberId.value = null;
+
+        role.value = null;
+
+        memberType.value = null;
+
+        router.push('/')
+      })
+      .catch((err) => {
+        console.error("로그아웃 에러 발생 :: ", err.response.data)
+      })
+    }
   }
 
   const kakaoLogin = () => {
