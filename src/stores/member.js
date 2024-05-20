@@ -28,7 +28,7 @@ export const useMemberStore = defineStore('member', () => {
 
       const tokenDto = JSON.stringify(res.data)
 
-      // console.log(tokenDto)
+      console.log(tokenDto)
 
       Cookies.set('tokenDto', tokenDto)
 

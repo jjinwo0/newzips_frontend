@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watchEffect } from 'vue';
 import HeaderComponent from './common/HeaderComponent.vue';
 import LoginModal from './modal/LoginModal.vue';
 import JoinModal from './modal/JoinModal.vue';
@@ -51,11 +51,12 @@ const moveChatList = () => {
 const payment = (expert) => {
   IMP.init('imp78754551');
 
+  const merchantUid = `ORD${Date.now()}`;
 	
   IMP.request_pay({ // param
         pg: "html5_inicis",
         pay_method: "card",
-        merchant_uid: "ORD20180131-0000011",
+        merchant_uid: merchantUid,
         name: "SSAFY HOUSE",
         amount: expert.price,
         buyer_email: "test@ssafy.com",
@@ -67,15 +68,20 @@ const payment = (expert) => {
         console.log(rsp);
         if (rsp.success) {
           console.log("결제 성공");
+          
+          roomStore.createRoom(expert.id, memberId.value).then(() => {
+            router.push({ name: 'chat' }).catch(err => {
+              console.error(err);
+            });
+          });
 
-          roomStore.create
         } else {
           console.log("결제 실패");
         }
       });
 }
 
-onMounted(() => {
+onMounted(async () => {
   // 현재 유저가 EnteredRoom에 있는 Room 이라면 getRoomList할 때 안나와야 함
   roomStore.getRoomList();
 
@@ -87,6 +93,10 @@ onMounted(() => {
   }
 
   console.log("mounted :: ",expertList.value)
+
+    watchEffect(() => {
+      expertList.value = roomStore.roomList;
+    });
 })
 </script>
 

@@ -110,7 +110,13 @@ const leaveRoom = () => {
 }
 
 onMounted(() => {
-  roomStore.fetchEnteredRooms(); // 사용자가 참여한 방 목록을 가져옵니다.
+  roomStore.fetchEnteredRooms().then(() => {
+    // 목록 갱신 완료 후 추가 작업 (예: 로컬 스토리지에 저장)
+    const storedRooms = localStorage.getItem('room');
+    if (storedRooms) {
+      enteredRooms.value = JSON.parse(storedRooms).enteredRooms;
+    }
+  });
 
   const storedRooms = localStorage.getItem('room');
   if (storedRooms) {

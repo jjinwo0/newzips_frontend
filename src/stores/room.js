@@ -9,10 +9,16 @@ const enteredRooms = ref([]);
 export const useRoomStore = defineStore('room', () => {
 
   // 방 생성
-  // const createRoom = async (expert, memberId) => {
+  const createRoom = async (expertId, memberId) => {
 
-  //   await axios.post(`http://localhost:8080/chat/room/init/${expert.id}/${memberId}`)
-  // }
+    await axios.post(`http://localhost:8080/chat/room/init/${expertId}/${memberId}`)
+    .then((res) => {
+      console.log(res.data, " is create chat room.");
+    })
+    .catch((err) => {
+      console.error('채팅방 생성 오류 :: ', err);
+    })
+  }
 
   //전체 방 조회
   const getRoomList = async () => {
@@ -128,5 +134,5 @@ export const useRoomStore = defineStore('room', () => {
   }
 
   // 스토어의 상태와 함수를 반환합니다.
-  return { enteredRooms, fetchEnteredRooms, roomList, getRoomList, deleteEnteredRoom };
+  return { enteredRooms, fetchEnteredRooms, roomList, getRoomList, deleteEnteredRoom, createRoom };
 }, { persist: true });
