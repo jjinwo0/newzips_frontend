@@ -52,7 +52,7 @@ export const useMemberStore = defineStore('member', () => {
   }
 
   // 로그아웃 함수
-  const logout = () => {``
+  const logout = () => {
 
     const tokenDto = Cookies.get('tokenDto');
     const token = JSON.parse(tokenDto);
@@ -120,10 +120,25 @@ export const useMemberStore = defineStore('member', () => {
 
     const accessToken = params.get('accessToken')
     const refreshToken = params.get('refreshToken')
+    const accessTokenExpireTime = params.get('accessTokenExpireTime')
+    const refreshTokenExpireTime = params.get('refreshTokenExpireTime')
+
+    console.log("accessToken :: ", accessToken)
+    console.log("refreshToken :: ", refreshToken)
+    console.log("accessTokenExpireTime :: ", accessTokenExpireTime)
+    console.log("refreshTokenExpireTime :: ", refreshTokenExpireTime)
 
     if (accessToken && refreshToken){
 
-      axios.post(`${REST_MEMBER_API}/oauth/kakao/login`, { memberType: 'KAKAO' },{
+      axios.post(`${REST_MEMBER_API}/oauth/kakao/login`, 
+      { 
+        memberType: 'KAKAO',
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        accessTokenExpireTime: accessTokenExpireTime,
+        refreshTokenExpireTime: refreshTokenExpireTime
+      },
+      {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
