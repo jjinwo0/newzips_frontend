@@ -97,16 +97,6 @@ onMounted(() => {
     </div>
   </header>
 
-  <div class="login-modal-container">
-    <!-- 모달 컴포넌트를 여기에 추가합니다. -->
-    <LoginModal :show="showModal" @update="closeModal" />
-  </div>
-
-  <div class="login-modal-container">
-    <!-- 모달 컴포넌트를 여기에 추가합니다. -->
-    <JoinModal :show="showJoinModal" @update="closeJoinModal" />
-  </div>
-
   <div style="margin-top: 5rem; display: flex; justify-content: center;"><h1 style="font-size: 36px;">전문가 QnA</h1></div>
 
   <div class="overflow-x-auto relative sm:rounded-lg">

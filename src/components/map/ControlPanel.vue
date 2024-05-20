@@ -21,6 +21,9 @@ const searchCondition = ref('searchByApartName');
 onMounted(() => {
   // 브라우저가 열리면 시도정보 얻기
   sendRequest(sido, "*00000000");
+
+  // 조회 목록 초기화
+  store.initialize();
 })
 
 // 숫자 3자리마다 , 붙임

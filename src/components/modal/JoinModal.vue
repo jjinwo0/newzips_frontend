@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import axios from 'axios';
 
 const props = defineProps({
@@ -33,6 +33,14 @@ watch(
   { immediate: true }
 ) // 컴포넌트가 마운트될 때 즉시 실행되도록 immediate 옵션 추가
 
+// 초기화
+const initialize = () => {
+  joinForm.value = {
+    username: '',
+    email: '',
+    password: ''}
+}
+
 const validUserId = () => {
 
   if(joinForm.value.username.includes(' ')){
@@ -62,12 +70,12 @@ const validId = () => {
   .then(() => {
     const confirm = window.confirm('사용 가능한 ID입니다. 사용하시겠습니까?');
     isConfirmed.value = confirm; // 사용자가 '확인'을 누른 경우 isConfirmed를 true로 설정
-    console.log(isConfirmed.value)
+    // console.log(isConfirmed.value)
   })
   .catch(() => {
     alert('중복된 ID 입니다.');
     isConfirmed.value = false; // 중복된 ID인 경우 isConfirmed를 false로 설정
-    console.log(isConfirmed.value)
+    // console.log(isConfirmed.value)
   })
 }
 
@@ -112,7 +120,7 @@ const joinMember = () => {
             <div class="mb-4">
               <div class="form-group mb-4" style="display: flex; align-items: center; gap: 5px;">
                 <label for="userId" class="block text-gray-700 text-sm font-bold mb-0 flex-none" style="width: 80px;">아이디</label>
-                <input type="text" v-model="joinForm.username" @keyup="validUserId" id="userId" name="userId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-auto" required>
+                <input type="text" v-model="joinForm.username" @keyup="validUserId" id="userId" name="userId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-auto" autocomplete="off" required>
                 <button @click="validId" class="py-2.5 px-5 text-sm font-medium text-white focus:outline-none bg-blue-500 rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 flex-none" style="width: 100px;">중복확인</button>
               </div>
               <span class="text-sm flex-none" style="color: red; ">{{ validUserIdResult }}</span>

@@ -28,9 +28,6 @@ onMounted(() => {
   });
 
   autoResize();
-
-
-
 });
 
 const router = useRouter()

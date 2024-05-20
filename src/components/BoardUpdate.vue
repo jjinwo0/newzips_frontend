@@ -2,6 +2,10 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import HeaderComponent from '@/components/common/HeaderComponent.vue'
+// 토스트 에디터
+import Editor from '@toast-ui/editor'
+import '@toast-ui/editor/dist/toastui-editor.css';
 
 const route = useRoute();
 const router = useRouter();
@@ -12,11 +16,47 @@ const title = ref('');
 const content = ref('');
 const author = ref('');
 
+const titleRef = ref(null);
+
+const editor = ref(null);
+let editorInstance = null
+
+//마운트될때 Editor 생성
+onMounted(() => {
+  editorInstance = new Editor({
+    el: editor.value,
+    height: '500px',
+    //'wysiwyg', 'markdown' 택 1
+    initialEditType: 'markdown',
+    previewStyle: 'vertical',
+    hooks: {
+      addImageBlobHook(blob, cllback) {
+        console.log(blob);
+        console.log(callback);
+      }
+    }
+  })
+
+  getBoard();
+
+  autoResize();
+});
+
+// 제목 리사이징
+const autoResize = () => {
+  const textarea = titleRef.value;
+  textarea.style.height = `auto`
+  textarea.style.height = `${textarea.scrollHeight}px`
+};
+
+
 const updateBoard = () => {
+
   // 수정할 데이터를 서버로 전송합니다.
   axios.patch(`http://localhost:8080/board/update/${id.value}`, {
+
     title: title.value,
-    content: content.value,
+    content: editorInstance.getMarkdown(),
   })
   .then(() => {
     console.log('수정 완료');
@@ -32,8 +72,11 @@ const getBoard = () => {
   .then((res) => {
     console.log(res.data);
     title.value = res.data.title;
-    content.value = res.data.content;
     author.value = res.data.author;
+
+    // 에디터에 값을 반영한다.
+    editorInstance.setMarkdown(res.data.content);
+
   })
   .catch((err) => {
     console.error(err);
@@ -45,12 +88,40 @@ const cancel = () => {
   // 또는 router.push('/board/list'); // 게시판 목록으로 이동
 };
 
-onMounted(() => {
-  getBoard();
-});
 </script>
 
 <template>
+  <header-component />
+  <div class="board-container">
+    <div class="bg-gradient-to-r" style="background: linear-gradient(to right, #06b6d4, #76aaff);">
+      <div style="padding: 0 10%">
+        <div style="display: flex; justify-content: end">
+          <img src="@/assets/image/board-background.gif" style="width: 170px; float: right;">
+        </div>
+        <div class="font-bold text-3xl text-white" style="text-align: center">공지사항 수정</div>
+        <img src="@/assets/image/board-background2.png" style="width: 170px;">
+      </div>
+    </div>
+
+    <div style="padding: 0 10%">
+      <div class="board-content">
+        <div style="margin: 20px 0px; ">
+          <textarea @keyup="autoResize" type="text" ref="titleRef" class="text-3xl" maxlength="80" rows="1"
+                    style=" width: 100%; overflow-y: hidden; padding: 15px 5px; resize: none; box-sizing: border-box;" placeholder="제목을 입력하세요." v-model="title" />
+        </div>
+        <div ref="editor" />
+        <div style="display:flex; column-gap: 0.5rem; align-items: center; justify-content: flex-end; margin-top: 10px">
+          <button type="button" class="bg-gray-300 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded shadow-lg" @click="cancel">취소</button>
+          <button type="button" class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded shadow-lg" @click="updateBoard">수정</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
   <div class="container mt-5">
     <div class="card">
       <div class="card-body">
@@ -72,8 +143,7 @@ onMounted(() => {
           </tbody>
         </table>
         <div class="text-end">
-          <button type="button" class="btn btn-primary" @click="updateBoard">수정</button>
-          <button type="button" class="btn btn-danger" @click="cancel">취소</button>
+
         </div>
       </div>
     </div>

@@ -37,7 +37,6 @@ const closeOpenDetail = () => {
   openDetail.value = !openDetail.value
 }
 
-
 // 위도 경도
 const nowLat = ref('')
 const nowLng = ref('')
@@ -47,13 +46,25 @@ const openControlPanel = ref(false)
 
 export const useHouseStore = defineStore('house', () => {
 
+  // 스토어 초기화
+  const initialize = () => {
+    // 검색 목록 초기화
+    searchResult.value = ''
+    searchTradingInfoResult.value = ''
+    openControlPanel.value = false
+    // 상세 정보 초기화
+    openDetail.value = false
+    detailData.value = []
+
+  }
+
   // 아파트 이름으로 검색
   const searchByName = (name) => {
     // 검색 내역 초기화
     searchResult.value = ''
     searchTradingInfoResult.value = ''
 
-    axios.get(`/list/name/${name}`)
+    axios.get(`${REST_HOUSE_API}/list/name/${name}`)
       .then((res) => {
         searchResult.value = res.data
         if(searchResult.value.length < 1) {
@@ -125,6 +136,6 @@ export const useHouseStore = defineStore('house', () => {
     REST_HOUSE_API, searchResult, searchByName, showDetails, openDetail,
     detailData, nowLat, nowLng, searchTradeInfoListByDistrict, searchTradingInfoResult,
     isResultEmpty, selectedOptions, openControlPanel,closeOpenDetail, foodCode, educationCode, sportsCode,
-    hospitalCode
+    hospitalCode, initialize
   }
 })

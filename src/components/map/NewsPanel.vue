@@ -18,10 +18,10 @@ onMounted( () => {
 })
 
 const onSwiper = (swiper) => {
-  console.log(swiper);
+
 };
 const onSlideChange = () => {
-  console.log('slide change');
+
 };
 
 const shortenWords = (str, length = 24) => {
