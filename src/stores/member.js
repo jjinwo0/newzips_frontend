@@ -16,6 +16,8 @@ const memberId = ref('')
 
 const role = ref('')
 
+const memberType = ref('')
+
 export const useMemberStore = defineStore('member', () => {
 
   // 로그인 함수
@@ -40,6 +42,8 @@ export const useMemberStore = defineStore('member', () => {
 
       role.value = res.data.role;
 
+      memberType.value = res.data.memberType;
+
       router.push('/')
     })
     .catch((err) => {
@@ -61,6 +65,14 @@ export const useMemberStore = defineStore('member', () => {
       Cookies.remove('tokenDto')
 
       loginMember.value = null;
+
+      profile.value = null;
+
+      memberId.value = null;
+
+      role.value = null;
+
+      memberType.value = null;
 
       router.push('/')
     })
@@ -102,6 +114,12 @@ export const useMemberStore = defineStore('member', () => {
 
         profile.value = res.data.profile;
 
+        memberId.value = res.data.id;
+
+        memberType.value = res.data.memberType;
+
+        role.value = res.data.role;
+
         router.push('/')
       })
       .catch((err) => {
@@ -114,11 +132,15 @@ export const useMemberStore = defineStore('member', () => {
     const tokenDto = Cookies.get('tokenDto');
     if (tokenDto) {
       const token = JSON.parse(tokenDto);
+
+      console.log(token)
+
       if (token && token.username) {
         loginMember.value = token.nickname;
         profile.value =token.profile;
         memberId.value = token.id;
         role.value = token.role;
+        memberType.value = token.memberType;
       }
     }
   }
@@ -177,5 +199,5 @@ export const useMemberStore = defineStore('member', () => {
     return Promise.reject(error)
   })
 
-  return { login, logout, loginMember, initializeAuthState, kakaoLogin, apiKey, kakaoLoginRedirect, profile, memberId }
+  return { login, logout, loginMember, initializeAuthState, kakaoLogin, apiKey, kakaoLoginRedirect, profile, memberId, role, memberType }
 })
