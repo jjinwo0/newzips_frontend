@@ -43,7 +43,8 @@ async function openChatRoom(room) {
   console.log('join room :: ', joinRoom.value)
 
   // 특정 방의 메시지를 구독
-  WebSocket.subscribeToRoom(room.id, (message) => {
+  WebSocket.subscribeToRoom(room.room_id, (message) => {
+    console.log("받은 메시지: ", message)
     messages.value.push(message);
     isLoading.value = false;
   });
@@ -51,7 +52,7 @@ async function openChatRoom(room) {
   console.log('messages :: ', messages.value)
 
   // TODO: 여기에 사용자가 방에 입장했다는 것을 서버에 알리는 코드를 추가할 수 있습니다.
-  WebSocket.enterRoom(room.id, { userId: memberStore.loginMember });
+  WebSocket.enterRoom(room.room_id, { sender: memberStore.loginMember });
 }
 
 // 메시지 전송 함수
@@ -65,8 +66,7 @@ function send() {
     console.log('roomId : ', currentRoomId);
     
     if (currentRoomId) {
-      WebSocket.sendMessage(currentRoomId, { text: textMessage.value });
-      messages.value.push(textMessage.value)
+      WebSocket.sendMessageToRoom(memberStore.loginMember, currentRoomId, textMessage.value);
 
       console.log('messages::', messages.value)
       textMessage.value = ''; // 입력 필드 초기화
@@ -90,6 +90,7 @@ const onDelete = (room) => {
 
   // 특정 방의 메시지를 구독
   WebSocket.subscribeToRoom(room.id, (message) => {
+    console.log("받은 메시지: ", message)
     messages.value.push(message);
     isLoading.value = false;
   });
@@ -97,7 +98,7 @@ const onDelete = (room) => {
   console.log('messages :: ', messages.value)
 
   // TODO: 여기에 사용자가 방에 입장했다는 것을 서버에 알리는 코드를 추가할 수 있습니다.
-  WebSocket.enterRoom(room.id, { userId: memberStore.loginMember });
+  WebSocket.enterRoom(room.id, { sender: memberStore.loginMember });
 }
 
 const leaveRoom = () => {
@@ -179,17 +180,17 @@ onBeforeUnmount(() => {
                 <div class="flex items-center justify-start mb-1">
                   <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
                     <!-- 이 부분에 로그인 멤버의 이니셜을 표시할 수 있습니다. 예시로 'LM'을 넣었습니다. -->
-                    {{ loginMember.substring(0, 1) }}
+                    {{ message.sender.substring(0, 1) }}
                   </div>
                   <div class="ml-2 text-sm text-gray-600">
                     <!-- 로그인 멤버의 이름을 표시합니다. 예시로 '로그인멤버'를 넣었습니다. -->
-                    {{ loginMember }}
+                    {{ message.sender }}
                   </div>
                 </div>
                 <!-- 메시지 내용을 표시하는 부분 -->
                 <div class="w-full px-2">
                   <div class="bg-green-200 min-h-[60px] p-4 rounded-lg relative before:absolute before:bottom-0 before:left-10 before:border-t-8 before:border-l-8 before:border-transparent before:border-t-green-200 before:content-['']">
-                    {{ message }}
+                    {{ message.message }}
                   </div>
                 </div>
               </div>
