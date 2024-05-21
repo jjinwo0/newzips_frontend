@@ -8,6 +8,7 @@ import OAuthRedirect from '@/components/oauth/OAuthRedirect.vue'
 import ExpertList from '@/components/ExpertList.vue'
 import ChatComponent from '@/components/common/ChatComponent.vue'
 import AdminDashboard from '@/components/admin/AdminDashboard.vue'
+import ChatGptComponent from '@/components/common/ChatGptComponent.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -56,6 +57,11 @@ const router = createRouter({
       path: '/admin/dashboard',
       name: 'admin-dashboard',
       component: AdminDashboard
+    },
+    {
+      path: '/chat/bot',
+      name: 'chatbot',
+      component: ChatGptComponent
     }
   ]
 })
