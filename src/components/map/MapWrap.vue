@@ -7,6 +7,7 @@ import { KakaoMap, KakaoMapCustomOverlay  } from 'vue3-kakao-maps';
 import { storeToRefs } from 'pinia';
 import StoreOptionPanel from '@/components/map/StoreOptionPanel.vue'
 import NewsPanel from '@/components/map/NewsPanel.vue'
+import AdvertisementPanel from '@/components/advertisement/AdvertisementPanel.vue'
 const { VITE_REST_STORE_API } = import.meta.env;
 
 const store = useHouseStore()
@@ -329,6 +330,8 @@ const showDetails = (aptCode) => {
 
     <StoreOptionPanel />
     <ControlPanel />
+
+    <AdvertisementPanel />
     <NewsPanel />
   </KakaoMap>
 

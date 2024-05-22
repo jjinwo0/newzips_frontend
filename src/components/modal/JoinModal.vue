@@ -12,7 +12,8 @@ const joinForm = ref({
   username: '',
   email: '',
   password: '',
-  nickname: ''
+  nickname: '',
+  isSubscribed : true
 })
 
 const closeModal = () => {
@@ -80,7 +81,7 @@ const validId = () => {
 }
 
 const joinMember = () => {
-  console.log('회원가입 : '+joinForm.value.username + ' ' +  joinForm.value.password + ' ' + joinForm.value.email)
+  console.log('회원가입 : '+joinForm.value.username + ' ' +  joinForm.value.password + ' ' + joinForm.value.email + ' ' + joinForm.value.isSubscribed)
   axios.post('http://localhost:8080/member/join', joinForm.value)
     .then(response => {
       // 회원가입 성공 시의 처리 로직
@@ -149,6 +150,13 @@ const joinMember = () => {
             </div>
               <span v-if="confirmPassword.length > 0 && matchPassword" class="text-sm" style="color: green">비밀번호가 일치합니다.</span>
               <span v-if="confirmPassword.length > 0 && !matchPassword" class="text-sm" style="color: red">비밀번호가 일치하지 않습니다.</span>
+
+            <div class="form-group mb-4" style="display: flex; align-items: center; gap: 5px;">
+              <label class="block text-gray-700 text-sm font-bold mb-0 flex-none" style="width: 80px;" for="password">뉴스레터</label>
+              <input checked id="checked-checkbox" type="checkbox" v-model="joinForm.isSubscribed" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="checked-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">매일 최신 부동산 뉴스를 보내드립니다</label>
+
+            </div>
 
               <button :disabled="!isConfirmed" class="w-full py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                       type="submit">
