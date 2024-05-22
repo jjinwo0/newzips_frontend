@@ -9,6 +9,7 @@ import StoreOptionPanel from '@/components/map/StoreOptionPanel.vue'
 import NewsPanel from '@/components/map/NewsPanel.vue'
 import AdvertisementPanel from '@/components/advertisement/AdvertisementPanel.vue'
 const { VITE_REST_STORE_API } = import.meta.env;
+import introJs from 'intro.js';
 
 const store = useHouseStore()
 const map = ref(null)
@@ -41,9 +42,11 @@ const storeMarkers = ref([]);
 // 구군 평균 실거래가 정보를 담는 마커 배열
 const gugunMarkers = ref([]);
 
+// intro 객체
+const intro = ref(null);
+
 onMounted(() => {
   fetchUserLocation()
-
 })
 
 // 지표 위도 좌표 변경 감시
@@ -297,6 +300,64 @@ const showDetails = (aptCode) => {
 }
 
 
+// 사이트 소개 튜토리얼 시작
+const startTutorial = () => {
+
+  intro.value = introJs();
+  intro.value.setOptions({
+    steps: [
+      {
+        intro: "안녕하세요! 뉴집스에 오신걸 환영합니다!"
+      },
+      {
+        element: document.querySelectorAll('.step')[0],
+        intro: "지도에서 아파트 실거래가 정보를 확인하실 수 있습니다"
+      },
+      {
+        element: document.querySelectorAll('.step')[1],
+        intro: "현재 위치의 행정동 주소를 보실 수 있습니다"
+      },
+      {
+        element: document.querySelectorAll('.step')[2],
+        intro: "상세한 내용을 검색해보실 수 있습니다"
+      },
+      {
+        element: document.querySelectorAll('.step')[3],
+        intro: "지역으로 바꿔서 조회하실 수 있습니다"
+      },
+      {
+        element: document.querySelectorAll('.option-step')[0],
+        intro: "상가 정보를 선택해서 보실 수 있습니다."
+      },
+      {
+        element: document.querySelectorAll('.option-step')[1],
+        intro: "현재 동의 음식점 정보를 보실 수 있습니다"
+      },
+      {
+        element: document.querySelectorAll('.option-step')[2],
+        intro: "현재 동의 교육 상가 정보를 보실 수 있습니다"
+      },
+      {
+        element: document.querySelectorAll('.option-step')[3],
+        intro: "현재 동의 예술/스포츠 상가 정보를 보실 수 있습니다"
+      },
+      {
+        element: document.querySelectorAll('.option-step')[4],
+        intro: "현재 동의 병원 상가 정보를 보실 수 있습니다"
+      },
+      {
+        element: document.querySelectorAll('.option-step')[5],
+        intro: "AI 챗봇을 사용하실 수 있습니다"
+      },
+      {
+        element: document.querySelectorAll('.step')[4],
+        intro: "당일 최신 부동산 뉴스를 보실 수 있습니다"
+      }
+
+    ]
+  })
+  intro.value.start();
+}
 
 
 </script>
@@ -304,10 +365,10 @@ const showDetails = (aptCode) => {
 <template>
 
 
-  <KakaoMap :lat="store.nowLat" :lng="store.nowLng" :draggable="true" style="height: 100vh; width: 100%" @onLoadKakaoMap="onLoadKakaoMap">
+  <KakaoMap :lat="store.nowLat" :lng="store.nowLng" :draggable="true" style="height: 100vh; width: 100%" @onLoadKakaoMap="onLoadKakaoMap" class="step">
 
-    <div class="address-display">
-      <div class="address-display-contents">{{ addressName }}</div>
+    <div class="address-display ">
+      <div class="address-display-contents step">{{ addressName }}</div>
     </div>
     <template v-if="mapLevel <= 6">
       <template v-for="marker in markers">
@@ -331,8 +392,17 @@ const showDetails = (aptCode) => {
     <StoreOptionPanel />
     <ControlPanel />
 
+      <button @click="startTutorial" style="z-index: 10; position:fixed; bottom: 5%; left:2em; padding:10px; background-color:#007BFF; color:white; border:none; border-radius:5px; cursor:pointer;">
+        <span style="margin-right:5px;">도움말</span><i class="fa fa-question-circle"></i>
+      </button>
+
+
     <AdvertisementPanel />
-    <NewsPanel />
+    <NewsPanel class="step" />
   </KakaoMap>
 
 </template>
+
+<style>
+
+</style>

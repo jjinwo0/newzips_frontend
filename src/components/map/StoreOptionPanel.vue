@@ -60,25 +60,25 @@ const pushOptionCode = (isSelected, optionCode) => {
 
 <template>
   <div class="store-option-panel">
-    <div class="store-option">
-      <button @click="toggleFoodSelected" :class="{'btn-food-option-selected' : foodSelected}" class="btn-option-select">
+    <div class="store-option option-step">
+      <button @click="toggleFoodSelected" :class="{'btn-food-option-selected' : foodSelected}" class="btn-option-select option-step">
         <i class="fa-solid fa-utensils"></i>
       </button>
 
-      <button @click="togglePencilSelected" :class="{'btn-pencil-option-selected' : pencilSelected}" class="btn-option-select">
+      <button @click="togglePencilSelected" :class="{'btn-pencil-option-selected' : pencilSelected}" class="btn-option-select option-step">
         <i class="fa-solid fa-pencil"></i>
       </button>
 
-      <button @click="toggleGymSelected" :class="{'btn-gym-option-selected' : gymSelected}" class="btn-option-select">
+      <button @click="toggleGymSelected" :class="{'btn-gym-option-selected' : gymSelected}" class="btn-option-select option-step">
         <i class="fa-solid fa-dumbbell"></i>
       </button>
 
-      <button @click="toggleHospitalSelected" :class="{'btn-hospital-option-selected' : hospitalSelected}" class="btn-option-select">
+      <button @click="toggleHospitalSelected" :class="{'btn-hospital-option-selected' : hospitalSelected}" class="btn-option-select option-step">
         <i class="fa-solid fa-hospital"></i>
       </button>
 
       <!-- 모달을 띄우는 버튼 -->
-      <button @click="openModal" class="btn-option-select">
+      <button @click="openModal" class="btn-option-select option-step">
         <i class="fa-solid fa-comments"></i>
       </button>
 

@@ -176,7 +176,7 @@ const toggleAnimation = computed(() => {
 
 <template>
   <div style="padding: 2.8em 2em 2em 2em;">
-    <div class="left-handle" :style="toggleAnimation" :class="{'max-h-36':!store.openControlPanel}"
+    <div class="left-handle step" :style="toggleAnimation" :class="{'max-h-36':!store.openControlPanel}"
     style="display: flex; flex-direction: column; justify-content: space-between; transition: 0.6s; overflow: hidden;">
       <div>
         <div class="left-handle-menu flex justify-between">
@@ -184,7 +184,7 @@ const toggleAnimation = computed(() => {
             <li class="list-selected">아파트</li>
           </ul>
 
-            <div class="bg-gray-200 rounded-lg text-xs inline-block">
+            <div class="bg-gray-200 rounded-lg text-xs inline-block step">
               <div class="inline-flex rounded-lg">
                 <input type="radio" name="searchByApartName" id="searchByApartName" value="searchByApartName" checked hidden v-model="searchCondition" />
                 <label for="searchByApartName" class="radio text-center self-center py-2 px-4 rounded-lg cursor-pointer hover:opacity-75">아파트명 검색</label>

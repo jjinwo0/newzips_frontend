@@ -3,6 +3,8 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import { useKakao } from 'vue3-kakao-maps/@utils';
+import 'intro.js/introjs.css';
+import 'intro.js/themes/introjs-modern.css';
 
 /* ag-grid css */
 import "ag-grid-community/styles/ag-grid.css";

@@ -16,6 +16,7 @@
     "ag-grid-community": "^31.3.1",
     "ag-grid-vue3": "^31.3.1",
     "axios": "^1.6.8",
+    "intro.js": "^7.2.0",
     "js-cookie": "^3.0.5",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
