@@ -1,13 +1,16 @@
 <script setup>
-import { ref, reactive, defineEmits } from 'vue';
+import { ref, defineEmits, computed } from 'vue';
+import { useMemberStore } from '@/stores/member';
 
+const memberStore = useMemberStore();
 const emit = defineEmits(['closeModal'])
 
 const messages = ref([]);
-const createMessage = ref('');
 const question = ref('');
 let currentBotMessageId = null;
 const isSending = ref(false);
+
+const loginMember = computed(() => memberStore.loginMember);
 
 // Enter 키 이벤트 핸들러
 const handleKeyUp = (event) => {
@@ -83,13 +86,21 @@ const sendQuestion = async () => {
 
 <template>
   <div class="chat-wrapper">
-    <button @click="emit('closeModal')" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
-      <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-      </svg>
-      <span class="sr-only">Close modal</span>
-    </button>
+    <div class="w-8 h-8 ms-auto inline-flex justify-center items-center ">
+      <button @click="emit('closeModal')" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
+        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+        </svg>
+        <span class="sr-only">Close modal</span>
+      </button>
+    </div>
     <div id="chat-container" class="chat-content">
+      <div class=" justify-start flex" v-if="loginMember === null">
+        <p class="rounded-lg p-2 bg-gray-300">안녕하세요, 무엇을 도와드릴까요?</p>
+      </div>
+      <div class=" justify-start flex" v-else>
+        <p class="rounded-lg p-2 bg-gray-300">안녕하세요 {{ loginMember }}님, 무엇을 도와드릴까요?</p>
+      </div>
       <div v-for="message in messages" :key="message.id" class="flex" :class="{'justify-end': message.sender === 'user', 'justify-start': message.sender === 'bot'}">
         <p class="rounded-lg p-2" :class="{'bg-blue-500 text-white': message.sender === 'user', 'bg-gray-300': message.sender === 'bot'}">{{ message.text }}</p>
       </div>
@@ -108,7 +119,7 @@ const sendQuestion = async () => {
   flex-direction: column;
   justify-content: space-between;
   max-width: 600px; /* 최대 너비 */
-  max-height: 300px;
+  max-height: 335px;
   margin: auto; /* 중앙 정렬 */
 }
 

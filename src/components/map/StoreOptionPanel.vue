@@ -18,6 +18,12 @@ const openModal = () => {
 
 const closeModal = () => {
   showModal.value = false;
+  const modalContent = document.querySelector('.modal-content');
+  modalContent.style.animation = 'slideOutToRight 0.5s ease-out forwards, fadeOut 0.5s ease-out forwards';
+
+  setTimeout(() => {
+    showModal.value = false;
+  }, 500); // 0.5초 후에 showModal 값을 false로 설정
 };
 
 const toggleFoodSelected = () => {
@@ -79,7 +85,7 @@ const pushOptionCode = (isSelected, optionCode) => {
       
       <div v-if="showModal" class="modal">
         <div class="modal-content" @click.self="showModal = false">
-          <ChatGptComponent @closeModal="showModal = false"/>
+          <ChatGptComponent @closeModal="closeModal"/>
         </div>
       </div>
     </div>
@@ -113,6 +119,43 @@ const pushOptionCode = (isSelected, optionCode) => {
   align-items: center;
 }
 
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(20%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(20%);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+
 .modal-content {
   position: fixed; /* 위치 고정 방식을 fixed로 변경 */
   bottom: 51.5%; /* 아랫변의 위치를 화면 하단으로부터 90px 떨어진 곳으로 설정 */
@@ -125,6 +168,7 @@ const pushOptionCode = (isSelected, optionCode) => {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  animation: slideInFromRight 0.5s ease-out forwards, fadeIn 0.5s ease-out forwards;
 }
 
 /* Prevent the modal area from being closed by clicking outside */
