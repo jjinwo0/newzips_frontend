@@ -164,8 +164,8 @@ const pushOptionCode = (isSelected, optionCode) => {
   max-height: 80%; /* 모달의 최대 높이 설정 유지 */
   overflow-y: auto; /* 내용이 넘치면 스크롤 생성 */
   background: #fff;
-  width: 640px;
-  padding: 20px;
+  width: 620px;
+  padding: 10px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   animation: slideInFromRight 0.5s ease-out forwards, fadeIn 0.5s ease-out forwards;

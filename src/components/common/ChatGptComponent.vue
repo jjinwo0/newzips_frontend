@@ -86,14 +86,18 @@ const sendQuestion = async () => {
 
 <template>
   <div class="chat-wrapper">
-    <div class="w-8 h-8 ms-auto inline-flex justify-center items-center ">
-      <button @click="emit('closeModal')" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
-        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-        </svg>
-        <span class="sr-only">Close modal</span>
-      </button>
+    <div class="title-container bg-gradient-to-r from-pink-200 via-purple-200 to-blue-200 flex justify-between items-center py-2">
+        <p class="text-xl font-bold text-gray-700 text-center flex-grow">뉴집스 도우미</p>
+        <div class="w-8 h-8 inline-flex justify-center items-center">
+            <button @click="emit('closeModal')" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white mr-1" data-modal-hide="default-modal">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+                <span class="sr-only">Close modal</span>
+            </button>
+        </div>
     </div>
+
     <div id="chat-container" class="chat-content">
       <div class=" justify-start flex" v-if="loginMember === null">
         <p class="rounded-lg p-2 bg-gray-300">안녕하세요, 무엇을 도와드릴까요?</p>
@@ -128,7 +132,6 @@ const sendQuestion = async () => {
   justify-content: center;
   background-color: #ffffff; /* 흰색 배경 */
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* 상단 그림자 효과 */
-  padding: 1rem; /* 내부 여백 */
   width: 600px; /* 너비 */
   max-width: 600px; /* 최대 너비 */
 }
@@ -169,10 +172,9 @@ button:hover {
   background-color: #ffffff; /* 흰색 배경 */
   border-radius: 8px; /* 모서리 둥글게 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
-  padding: 1rem; /* 내부 여백 */
-  width: 600px; /* 최대 너비 */
+  width: 96%; /* 최대 너비 */
   max-width: 600px; /* 최대 너비 유지 */
-  margin: auto; /* 중앙 정렬 */
+  margin: 0.7rem; /* 중앙 정렬 */
   overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
 }
 
