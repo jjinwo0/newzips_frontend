@@ -83,7 +83,12 @@ const sendQuestion = async () => {
 
 <template>
   <div class="chat-wrapper">
-    <button class="close-button" @click="emit('closeModal')">X</button>
+    <button @click="emit('closeModal')" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
+      <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+      </svg>
+      <span class="sr-only">Close modal</span>
+    </button>
     <div id="chat-container" class="chat-content">
       <div v-for="message in messages" :key="message.id" class="flex" :class="{'justify-end': message.sender === 'user', 'justify-start': message.sender === 'bot'}">
         <p class="rounded-lg p-2" :class="{'bg-blue-500 text-white': message.sender === 'user', 'bg-gray-300': message.sender === 'bot'}">{{ message.text }}</p>

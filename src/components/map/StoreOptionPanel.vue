@@ -115,19 +115,17 @@ const pushOptionCode = (isSelected, optionCode) => {
 
 .modal-content {
   position: fixed; /* 위치 고정 방식을 fixed로 변경 */
-  bottom: 90px; /* 아랫변의 위치를 화면 하단으로부터 90px 떨어진 곳으로 설정 */
+  bottom: 51.5%; /* 아랫변의 위치를 화면 하단으로부터 90px 떨어진 곳으로 설정 */
   top: auto; /* 상단 위치를 자동으로 조절하여 내용이 늘어날 때 위로 확장되도록 설정 */
   margin-right: 120px; /* 오른쪽 여백 설정 유지 */
-  width: 30%; /* 모달의 폭 설정 유지 */
   max-height: 80%; /* 모달의 최대 높이 설정 유지 */
   overflow-y: auto; /* 내용이 넘치면 스크롤 생성 */
   background: #fff;
+  width: 640px;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
-
-
 
 /* Prevent the modal area from being closed by clicking outside */
 .modal-content, .modal-overlay {
