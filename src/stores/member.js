@@ -47,6 +47,7 @@ export const useMemberStore = defineStore('member', () => {
       router.push('/')
     })
     .catch((err) => {
+      alert(err.response.data.errorMessage)
       console.error("로그인 에러 발생 :: ", err.response.data);
     })
   }

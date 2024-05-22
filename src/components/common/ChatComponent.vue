@@ -144,7 +144,7 @@ onBeforeUnmount(() => {
     <div class="container mx-auto bg-white">
       <section class="room-list">
         <section class="room-tab flex border-b">
-          <div :class="{'bg-gray-200': !isAllTab}" class="flex-1 text-center py-2">내가 속한 채팅 방</div>
+          <div :class="{'bg-gray-200': !isAllTab}" class="flex-1 text-center py-2 all-room">내가 속한 채팅 방</div>
         </section>
         <section style="height: calc(100% - 50px); overflow: auto;">
           <keep-alive>
@@ -153,12 +153,12 @@ onBeforeUnmount(() => {
                 <template v-for="(room, index) in enteredRooms" :key="index">
                   <section class="p-2" v-if="room.status === 'LIVE'">
                     <div class="room-item p-4 bg-white rounded cursor-pointer" @click="openChatRoom(room)">
-                      <p>{{ room.expertNickname }}</p>
+                      <p>{{ room.expertNickname }}의 채팅방</p>
                     </div>
                   </section>
                   <section class="p-2" v-else>
                     <div class="expired-item p-4 bg-white rounded cursor-pointer" @click="onDelete(room)">
-                      <p>{{ room.expertNickname }}</p>
+                      <p>{{ room.expertNickname }}의 채팅방</p>
                     </div>
                   </section>
                 </template>
@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
 
           <section class="chat-list" v-if="messages">
             <template v-for="(message, index) in messages" :key="index">
-              <div class="w-full my-2 flex flex-col">
+              <div  :class="['w-full', 'my-2', 'flex', 'flex-col', { 'message user': message.sender === loginMember, 'message other': message.sender !== loginMember }]" >
                 <!-- 로그인 멤버 정보와 메시지를 표시하는 부분 -->
                 <div class="flex items-center justify-start mb-1">
                   <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
                 </div>
                 <!-- 메시지 내용을 표시하는 부분 -->
                 <div class="w-full px-2">
-                  <div class="bg-green-200 min-h-[60px] p-4 rounded-lg relative before:absolute before:bottom-0 before:left-10 before:border-t-8 before:border-l-8 before:border-transparent before:border-t-green-200 before:content-['']">
+                  <div class="msg bg-green-200 min-h-[60px] p-4 rounded-lg relative before:absolute before:bottom-0 before:left-10 before:border-t-8 before:border-l-8 before:border-transparent before:border-t-green-200 before:content-['']">
                     {{ message.message }}
                   </div>
                 </div>
@@ -201,7 +201,7 @@ onBeforeUnmount(() => {
           <base-spinner v-else/>
 
           <section class="chat-input-area flex mt-2">
-            <input class="chat-input flex-1 p-2 border" type="text" @keyup.enter="send" v-model="textMessage"/>
+            <input class="chat-input flex-1 p-2 border chat-input" type="text" @keyup.enter="send" v-model="textMessage"/>
             <button class="chat-input-send-btn ml-2 px-4 py-2 bg-blue-500 text-white" type="button" @click="send">보내기</button>
           </section>
         </div>
@@ -219,185 +219,164 @@ onBeforeUnmount(() => {
 
 
 * {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-}
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+    }
+    html {
+      font-family: "Roboto", sans-serif;
+    }
+    .wrap {
+      width: 100%;
+      height: 100%;
+    }
+    .container {
+      width: 100%;
+      height: 100%;
+      padding: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .room-list {
+      width: 400px;
+      height: 600px;
+      border: 1px solid black;
+      margin-right: 2px;
+    }
+    .room-tab {
+      width: 100%;
+      height: 50px;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    .all-room, .my-room {
+      border-radius: 5px;
+      padding: 10px;
+      background: rgba(154, 175, 154, 0.45);
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .all-room:hover, .my-room:hover, .active-all-room, .active-my-room {
+      background: rgba(0, 245, 0, 0.85);
+    }
+    .room-item, .expired-item {
+      width: 100%;
+      height: 70px;
+      border-radius: 10px;
+      display: flex;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .room-item {
+      background: #25ab25;
+    }
+    .room-item:hover {
+      background: #1bce1b;
+    }
+    .room-item > p, .expired-item > p {
+      font-size: 20px;
+      font-weight: 800;
+      color: white;
+    }
+    .expired-item {
+      background: #ce3925;
+    }
+    .expired-item:hover {
+      background: #ce631b;
+    }
+    .chat-area {
+      width: 600px;
+      height: 600px;
+      border: 1px solid black;
+    }
+    .chat-wrap {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+    }
+    .chat-header {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      border: 1px solid #c8c8e3;
+      border-radius: 10px;
+    }
+    .chat-list {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      margin-top: 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(208, 185, 185, 0.34);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-input-area {
+      width: 100%;
+      height: 200px;
+      background: white;
+      padding: 20px;
+    }
+    .chat-input {
+      height: 100%;
+      width: 80%;
+      margin-right: 20px;
+      border-radius: 10px;
+    }
+    .chat-input-send-btn {
+      height: 100%;
+      width: calc(20% - 20px);
+      border-radius: 10px;
+      border-style: none;
+    }
+    .fixed-buttons {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 12px;
+    }
+    .message {
+      max-width: 70%;
+      padding: 10px;
+      border-radius: 10px;
+      animation: fadeIn 0.5s;
+    }
 
-html {
-  font-family: "ROboto", sans-serif;
-}
+    .message.user {
+      align-self: flex-end;
+    }
 
-.wrap {
-  width: 100%;
-  height: 100%;
-}
+    .message.other {
+      background-color: #ffffff;
+      align-self: flex-start;
+    }
 
-.container {
-  width: 100%;
-  height: 100%;
-  padding: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    .message.user .msg {
+      background-color: #bbffd3;
+    }
 
-.room-list {
-  width: 400px;
-  height: 600px;
-  border: 1px solid black;
-  margin-right: 2px;
-}
+    .message.other .msg {
+      background-color: #f7ffb1;
+    }
 
-.room-tab {
-  width: 100%;
-  height: 50px;
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-evenly;
-  align-items: center
-}
-
-.all-room {
-  border-radius: 5px;
-  padding: 10px;
-  background: rgba(154, 175, 154, 0.45);
-  cursor: pointer;
-}
-
-.all-room:hover {
-  background: rgba(0, 245, 0, 0.85);
-}
-
-.my-room {
-  border-radius: 5px;
-  padding: 10px;
-  background: rgba(154, 175, 154, 0.45);
-  cursor: pointer;
-}
-.active-my-room {
-  border-radius: 5px;
-  padding: 10px;
-  background: rgba(0, 245, 0, 0.85);
-  cursor: pointer;
-}
-
-.active-all-room {
-  border-radius: 5px;
-  padding: 10px;
-  background: rgba(0, 245, 0, 0.85);
-  cursor: pointer;
-}
-
-.my-room:hover {
-  background: rgba(0, 245, 0, 0.85);
-}
-
-.room-item {
-  width: 100%;
-  height: 70px;
-  background: #25ab25;
-  border-radius: 10px;
-  display: flex;
-  align-content: center;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-.room-item:hover {
-  background: #1bce1b;
-}
-
-.room-item > p {
-  font-size: 20px;
-  font-weight: 800;
-  color: white;
-}
-
-
-.expired-item {
-  width: 100%;
-  height: 70px;
-  background: #ce3925;
-  border-radius: 10px;
-  display: flex;
-  align-content: center;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-.expired-item:hover {
-  background: #ce631b;
-}
-
-.expired-item > p {
-  font-size: 20px;
-  font-weight: 800;
-  color: white;
-}
-
-.chat-area {
-  width: 600px;
-  height: 600px;
-  border: 1px solid black;
-}
-
-.chat-wrap {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-}
-
-.chat-header {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 700;
-  border: 1px solid #c8c8e3;
-  border-radius: 10px;
-}
-
-.chat-list {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  margin-top: 20px;
-  border-radius: 10px;
-  border: 1px solid rgba(208,185,185,0.34);
-  padding: 10px;
-}
-
-.chat-input-area {
-  width: 100%;
-  height: 200px;
-  background: white;
-  padding: 20px;
-}
-
-.chat-input {
-  height: 100%;
-  width: 80%;
-  margin-right: 20px;
-  border-radius: 10px;
-}
-
-.chat-input-send-btn {
-  height: 100%;
-  width: calc(20% - 20px);
-  border-radius: 10px;
-  border-style: none;
-}
-
-.fixed-buttons {
-  position: fixed;
-  bottom: 20px; /* 화면 아래쪽으로부터의 거리 */
-  right: 20px; /* 화면 오른쪽으로부터의 거리 */
-  display: flex;
-  gap: 12px; /* 버튼 사이의 간격 */
-}
-
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
 </style>

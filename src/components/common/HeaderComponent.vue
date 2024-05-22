@@ -63,10 +63,10 @@ const logout = () => {
             안녕하세요 <span class="font-bold">{{ loginMember }}</span> 님
           </div>
           <a href="#" @click="logout">로그아웃</a>
+          <RouterLink to="/chat" v-if="role === 'EXPERT'">채팅 리스트</RouterLink>
+          <RouterLink to="/expert" v-else>전문가 Q&A</RouterLink>
+          <RouterLink to="/admin/dashboard" v-if=" role === 'ADMIN'">관리자 페이지</RouterLink>
         </template>
-
-        <RouterLink to="/admin/dashboard" v-if=" role === 'ADMIN'">관리자 페이지</RouterLink>
-        <RouterLink to="/expert">전문가 Q&A</RouterLink>
         <RouterLink to="/board">공지사항</RouterLink>
 
         <div class="login-modal-container">
