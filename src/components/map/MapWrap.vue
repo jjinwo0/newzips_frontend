@@ -392,7 +392,8 @@ const startTutorial = () => {
     <StoreOptionPanel />
     <ControlPanel />
 
-      <button @click="startTutorial" style="z-index: 10; position:fixed; bottom: 5%; left:2em; padding:10px; background-color:#007BFF; color:white; border:none; border-radius:5px; cursor:pointer;">
+    <!-- 도움말 -->
+      <button v-show="false" @click="startTutorial" style="z-index: 10; position:fixed; bottom: 5%; left:2em; padding:10px; background-color:#007BFF; color:white; border:none; border-radius:5px; cursor:pointer;">
         <span style="margin-right:5px;">도움말</span><i class="fa fa-question-circle"></i>
       </button>
 
