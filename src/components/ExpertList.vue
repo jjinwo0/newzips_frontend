@@ -113,30 +113,30 @@ onMounted(async () => {
     <table class="w-full text-sm text-left text-gray-500">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50">
         <tr>
-          <th scope="col" class="py-3 px-6">ID</th>
-          <th scope="col" class="py-3 px-6">Name</th>
-          <th scope="col" class="py-3 px-6">Price (30min)</th>
-          <th scope="col" class="py-3 px-6">Detail</th>
+          <th scope="col" class="py-5 px-5 text-center" style="font-size: 20px;">ID</th>
+          <th scope="col" class="py-3 px-5 text-center" style="font-size: 20px;">전문가</th>
+          <th scope="col" class="py-3 px-5 text-center" style="font-size: 20px;">비용 (30분 기준)</th>
+          <th scope="col" class="py-3 px-5 text-center" style="font-size: 20px;">결제</th>
         </tr>
       </thead>
       <tbody v-if="expertList">
         <tr v-for="(expert, index) in expertList" :key="index" class="border-b odd:bg-white even:bg-gray-50">
-          <td class="py-4 px-6">{{ index+1 }}</td>
-          <td class="py-4 px-6">{{ expert.nickname }}</td>
-          <td class="py-4 px-6">{{ expert.price }}원</td>
-          <td class="py-4 px-6" v-if="!expert.isEntered">
-            <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300 button-common"
-            @click="payment(expert)">Payment</button>                    
+          <td class="py-4 px-6 text-center">{{ index+1 }}</td>
+          <td class="py-4 px-6 text-center">{{ expert.nickname }}</td>
+          <td class="py-4 px-6 text-center">{{ expert.price }}원</td>
+          <td class="py-4 px-6 text-center" v-if="!expert.isEntered">
+            <button class="px-2 py-3 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300 button-common"
+            @click="payment(expert)">결제</button>                    
           </td>
-          <td class="py-4 px-6" v-else>
-            <button class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-blue-700 transition duration-300 button-common"
+          <td class="py-4 px-6 text-center" v-else>
+            <button class="px-2 py-3 bg-orange-500 text-white rounded hover:bg-blue-700 transition duration-300 button-common"
             @click="moveChat">Open Chat</button>                    
           </td>
         </tr>
       </tbody>
     </table>
     <div class="fixed-button-container">
-      <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-blue-700 transition duration-300 button-common" @click="moveChatList">Open Chat List</button>
+      <button class="px-5 py-4 bg-green-500 text-white rounded hover:bg-blue-700 transition duration-300 button-common" @click="moveChatList">채팅 리스트 열기</button>
     </div>
   </div>
 </template>
@@ -163,5 +163,13 @@ onMounted(async () => {
   position: fixed; /* 고정 위치 */
   bottom: 20px; /* 하단에서 20px 위 */
   right: 20px; /* 우측에서 20px 왼쪽 */
+}
+
+th, td {
+  text-align: center;
+}
+
+td {
+  font-size: 16px;
 }
 </style>
