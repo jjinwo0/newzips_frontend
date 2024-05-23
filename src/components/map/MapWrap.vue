@@ -10,6 +10,8 @@ import NewsPanel from '@/components/map/NewsPanel.vue'
 import AdvertisementPanel from '@/components/advertisement/AdvertisementPanel.vue'
 const { VITE_REST_STORE_API } = import.meta.env;
 import introJs from 'intro.js';
+import NewsLetterModal from '@/components/modal/NewsLetterModal.vue'
+import AuctionInfoModal from '@/components/modal/AuctionInfoModal.vue'
 
 const store = useHouseStore()
 const map = ref(null)
@@ -218,6 +220,7 @@ const getAuctionInfoByDongName = () => {
       auctionMarkers.value = [];
 
       auctionMarkers.value = response.data.map((markerInfo) => ({
+        id : markerInfo.id,
         court : markerInfo.court,
         location : markerInfo.location,
         appraisalValue : markerInfo.appraisalValue,
@@ -228,7 +231,7 @@ const getAuctionInfoByDongName = () => {
         nowLng : markerInfo.lat,
       }))
 
-      console.log('경매정보 ==== ' +  JSON.stringify(auctionMarkers.value, null, 2))
+      //console.log('경매정보 ==== ' +  JSON.stringify(auctionMarkers.value, null, 2))
     })
     .catch((error) => {
       console.log(error)
@@ -290,11 +293,9 @@ const makeStoreMarker = (storeName, mainCategoryCode, mainCategoryName, doro) =>
 }
 
 const makeAuctionMarker = (auctionMarker) => {
-  console.log('dd')
-  let html = `<div class="house-info-overlay" style="background-color: #ffab2e">
-              <div class="apart-amount" style="background-color: #ffab2e">${shortenPrice(auctionMarker.minimumSalePrice)}억</div>
-              <p class="apart-name" style="">` +
-             `</p></div>`;
+  let html = `<div class="house-info-overlay" style="background-color: #ffab2e" onclick="openAuctionInfoModal(${auctionMarker.id})">` +
+              `<div class="apart-amount" style="background-color: #ffab2e">${shortenPrice(auctionMarker.minimumSalePrice)}억</div> ` +
+              `<p class="apart-name" style="">경매</p></div>`;
   return html;
 
 }
@@ -352,6 +353,30 @@ window.closeStoreDetailInfo = (event) => {
 // 아파트상세 정보 조회 뷰 메서드
 const showDetails = (aptCode) => {
   store.showDetails(aptCode)
+}
+
+// 경매 모달관련상태
+const auctionId = ref('')
+window.openAuctionInfoModal = (id) => {
+  openAuctionInfoModal(id);
+}
+const showAuctionInfoModal = ref(false)
+const openAuctionInfoModal = (id) => {
+  auctionId.value = id;
+  showAuctionInfoModal.value = !showAuctionInfoModal.value
+}
+const closeAuctionInfoModal = () => {
+  showAuctionInfoModal.value = false
+}
+
+
+// 뉴스레터 모달관련상태
+const showNewsLetterModal = ref(false)
+const openNewsLetterModal = () => {
+  showNewsLetterModal.value = !showNewsLetterModal.value
+}
+const closeNewsLetterModal = () => {
+  showNewsLetterModal.value = false
 }
 
 
@@ -449,11 +474,14 @@ const startTutorial = () => {
       </KakaoMapCustomOverlay>
     </template>
 
+    <AuctionInfoModal :show="showAuctionInfoModal" :id="auctionId" @update="closeAuctionInfoModal" />
+    <NewsLetterModal :show="showNewsLetterModal" @update="closeNewsLetterModal" />
+
     <StoreOptionPanel />
     <ControlPanel />
 
     <!-- 도움말 -->
-      <button v-if="false" @click="startTutorial" style="z-index: 10; position:fixed; bottom: 5%; left:2em; padding:10px; background-color:#007BFF; color:white; border:none; border-radius:5px; cursor:pointer;">
+      <button v-if="true" @click="startTutorial" style="z-index: 10; position:fixed; bottom: 5%; left:2em; padding:10px; background-color:#007BFF; color:white; border:none; border-radius:5px; cursor:pointer;">
         <span style="margin-right:5px;">도움말</span><i class="fa fa-question-circle"></i>
       </button>
 
