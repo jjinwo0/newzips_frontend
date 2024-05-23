@@ -105,7 +105,7 @@ const pushOptionCode = (isSelected, optionCode) => {
   flex-direction: column;
   align-items: flex-start; /* 모달을 왼쪽에 정렬 */
   justify-content: center;
-  padding-left: 10%; /* 왼쪽 정렬 시 여백 조정 */
+
 }
 
 .modal {

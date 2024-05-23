@@ -42,6 +42,10 @@ const storeMarkers = ref([]);
 // 구군 평균 실거래가 정보를 담는 마커 배열
 const gugunMarkers = ref([]);
 
+// 경매 정보를 담는 마커 배열
+const auctionMarkers = ref([]);
+
+
 // intro 객체
 const intro = ref(null);
 
@@ -167,6 +171,8 @@ function getApartMentInfoByDongName(result, status) {
 
         getStoreInfoByDongName()
 
+        getAuctionInfoByDongName()
+
         break;
       }
     }
@@ -200,7 +206,36 @@ const getStoreInfoByDongName = ()=> {
     })
 }
 
-// 상가 옵셔 변경 감시
+// 경매 정보를 조회하는 메서드
+const getAuctionInfoByDongName = () => {
+
+  let params = {...address.value, 'selectedOption' : selectedOptions.value.join(",")};
+
+  axios.get(`http://localhost:8080/auction/list`, {
+    params: params
+  })
+    .then((response) => {
+      auctionMarkers.value = [];
+
+      auctionMarkers.value = response.data.map((markerInfo) => ({
+        court : markerInfo.court,
+        location : markerInfo.location,
+        appraisalValue : markerInfo.appraisalValue,
+        minimumSalePrice : markerInfo.minimumSalePrice,
+        saleDate : markerInfo.saleDate,
+        status : markerInfo.status,
+        nowLat : markerInfo.lng,
+        nowLng : markerInfo.lat,
+      }))
+
+      console.log('경매정보 ==== ' +  JSON.stringify(auctionMarkers.value, null, 2))
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
+// 상가 옵션 변경 감시
 watch(selectedOptions, (newOptions, oldOptions) => {
   getStoreInfoByDongName();
 });
@@ -215,6 +250,14 @@ const shortenWords = (str, length = 8) => {
   }
   return result
 }
+
+const shortenPrice = (price) => {
+  price = price.replace(/,/g, '');
+  price = parseFloat(price);
+  price = (price / 100000000).toFixed(1);
+  return price;
+}
+
 
 // 커스텀 오버레이 설정
 const content = (aptCode, dealAmount, apartmentName) =>{
@@ -244,6 +287,16 @@ const makeStoreMarker = (storeName, mainCategoryCode, mainCategoryName, doro) =>
   }
 
     return html
+}
+
+const makeAuctionMarker = (auctionMarker) => {
+  console.log('dd')
+  let html = `<div class="house-info-overlay" style="background-color: #ffab2e">
+              <div class="apart-amount" style="background-color: #ffab2e">${shortenPrice(auctionMarker.minimumSalePrice)}억</div>
+              <p class="apart-name" style="">` +
+             `</p></div>`;
+  return html;
+
 }
 
 // 구군 마커 커스텀 오버레이 설정
@@ -279,6 +332,8 @@ window.showStoreDetail = (event, storeName, mainCategoryName, doro) => {
   event.currentTarget.parentElement.appendChild(detailDiv);
 
 }
+
+
 
 window.closeStoreDetail = (event) => {
   event.currentTarget.parentElement.style.zIndex = 0;
@@ -389,11 +444,16 @@ const startTutorial = () => {
       </KakaoMapCustomOverlay>
     </template>
 
+    <template v-for="auctionMarker in auctionMarkers">
+      <KakaoMapCustomOverlay  :lat="auctionMarker.nowLat" :lng="auctionMarker.nowLng" :content="makeAuctionMarker(auctionMarker)">
+      </KakaoMapCustomOverlay>
+    </template>
+
     <StoreOptionPanel />
     <ControlPanel />
 
     <!-- 도움말 -->
-      <button v-show="false" @click="startTutorial" style="z-index: 10; position:fixed; bottom: 5%; left:2em; padding:10px; background-color:#007BFF; color:white; border:none; border-radius:5px; cursor:pointer;">
+      <button v-if="false" @click="startTutorial" style="z-index: 10; position:fixed; bottom: 5%; left:2em; padding:10px; background-color:#007BFF; color:white; border:none; border-radius:5px; cursor:pointer;">
         <span style="margin-right:5px;">도움말</span><i class="fa fa-question-circle"></i>
       </button>
 
