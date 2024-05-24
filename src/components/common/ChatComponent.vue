@@ -175,6 +175,7 @@ onBeforeUnmount(() => {
 
           <section class="chat-list" v-if="messages">
             <template v-for="(message, index) in messages" :key="index">
+              <!-- TODO : 스크롤 업데이트 -->
               <div  :class="['w-full', 'my-2', 'flex', 'flex-col', { 'message user': message.sender === loginMember, 'message other': message.sender !== loginMember }]" >
                 <!-- 로그인 멤버 정보와 메시지를 표시하는 부분 -->
                 <div class="flex items-center justify-start mb-1">
