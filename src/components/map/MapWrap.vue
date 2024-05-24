@@ -293,8 +293,8 @@ const makeStoreMarker = (storeName, mainCategoryCode, mainCategoryName, doro) =>
 }
 
 const makeAuctionMarker = (auctionMarker) => {
-  let html = `<div class="house-info-overlay" style="background-color: #ffab2e" onclick="openAuctionInfoModal(${auctionMarker.id})">` +
-              `<div class="apart-amount" style="background-color: #ffab2e">${shortenPrice(auctionMarker.minimumSalePrice)}억</div> ` +
+  let html = `<div class="house-info-overlay" style="background-color: #ff2e2e" onclick="openAuctionInfoModal(${auctionMarker.id})">` +
+              `<div class="apart-amount" style="background-color: #ff2e2e">${shortenPrice(auctionMarker.minimumSalePrice)}억</div> ` +
               `<p class="apart-name" style="">경매</p></div>`;
   return html;
 
@@ -302,8 +302,8 @@ const makeAuctionMarker = (auctionMarker) => {
 
 // 구군 마커 커스텀 오버레이 설정
 const makeGugunMarker = (gugunName, avgDealAmount) => {
-  let html = `<div class="house-info-overlay" style="background-color: #f65a3b">
-              <div class="apart-amount" style="background-color: #f65a3b">${avgDealAmount}억</div>
+  let html = `<div class="house-info-overlay" style="background-color: #f68f3b">
+              <div class="apart-amount" style="background-color: #f68f3b">${avgDealAmount}억</div>
               <p class="apart-name" style="">${gugunName}</p></div>`;
   return html
 }
@@ -464,14 +464,18 @@ const startTutorial = () => {
       </template>
     </template>
 
-    <template v-for="storeMarker in storeMarkers">
-      <KakaoMapCustomOverlay  :lat="storeMarker.nowLat" :lng="storeMarker.nowLng" :content="makeStoreMarker(storeMarker.storeName, storeMarker.mainCategoryCode, storeMarker.mainCategoryName, storeMarker.doro)">
-      </KakaoMapCustomOverlay>
+    <template v-if="mapLevel <= 6">
+      <template v-for="storeMarker in storeMarkers">
+        <KakaoMapCustomOverlay  :lat="storeMarker.nowLat" :lng="storeMarker.nowLng" :content="makeStoreMarker(storeMarker.storeName, storeMarker.mainCategoryCode, storeMarker.mainCategoryName, storeMarker.doro)">
+        </KakaoMapCustomOverlay>
+      </template>
     </template>
 
-    <template v-for="auctionMarker in auctionMarkers">
-      <KakaoMapCustomOverlay  :lat="auctionMarker.nowLat" :lng="auctionMarker.nowLng" :content="makeAuctionMarker(auctionMarker)">
-      </KakaoMapCustomOverlay>
+    <template v-if="mapLevel <= 6">
+      <template v-for="auctionMarker in auctionMarkers">
+        <KakaoMapCustomOverlay  :lat="auctionMarker.nowLat" :lng="auctionMarker.nowLng" :content="makeAuctionMarker(auctionMarker)">
+        </KakaoMapCustomOverlay>
+      </template>
     </template>
 
     <AuctionInfoModal :show="showAuctionInfoModal" :id="auctionId" @update="closeAuctionInfoModal" />
